@@ -1,6 +1,4 @@
 import Link from 'next/link';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer/Footer';
 import { CategoryCard } from '@/components/Card/CategoryCard';
 import { JobCard } from '@/components/Card/JobCard';
 import { FreelancerCard } from '@/components/Card/FreelancerCard';
@@ -8,7 +6,7 @@ import { StatsRow } from '@/components/Stats/StatsRow';
 import { StepItem } from '@/components/Steps/StepItem';
 import { 
   CATEGORIES, 
-  FEATURED_JOBS, 
+  MOCK_PROJECTS_API, 
   TOP_FREELANCERS, 
   POPULAR_SEARCH_TAGS,
   STATS_DATA,
@@ -24,7 +22,6 @@ import {
 export default function Home() {
   return (
     <div className="min-h-screen flex flex-col bg-slate-50">
-      <Navbar />
 
       {/* HERO SECTION */}
       <section className="relative pt-12 pb-24 lg:pt-20 lg:pb-32 overflow-hidden bg-gradient-to-b from-emerald-50/40 via-white to-slate-50">
@@ -131,8 +128,8 @@ export default function Home() {
           </div>
 
           <div className="space-y-4">
-            {FEATURED_JOBS.map((job) => (
-              <JobCard key={job.id} {...job} />
+            {MOCK_PROJECTS_API.map((project) => (
+              <JobCard key={project.id} project={project} />
             ))}
           </div>
         </div>
@@ -214,8 +211,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      <Footer />
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import { ProjectResponse } from '@/types/api';
 import { 
   Code2, 
   Palette, 
@@ -20,42 +21,46 @@ export const CATEGORIES = [
   { icon: TrendingUp, title: 'Kinh Doanh & Tư Vấn', count: '380+ việc làm', color: 'bg-teal-50 text-teal-600 border-teal-100' },
 ];
 
-export const FEATURED_JOBS = [
+// Mock API Projects khớp đúng cấu trúc của Spring Boot ProjectResponse
+export const MOCK_PROJECTS_API: ProjectResponse[] = [
   {
     id: 1,
+    clientId: 101,
+    clientEmail: 'client.techcorp@gmail.com',
     title: 'Xây dựng Website E-commerce sử dụng Next.js & TailwindCSS',
-    client: 'TechCorp Vietnam',
-    type: 'Dự án trọn gói',
-    budget: '15.000.000 - 25.000.000 VNĐ',
-    location: 'Toàn quốc (Remote)',
-    postedAt: '2 giờ trước',
-    proposals: 8,
-    skills: ['Next.js', 'React', 'TailwindCSS', 'TypeScript', 'RESTful API'],
-    urgent: true
+    description: 'Cần tìm Freelancer lập trình giao diện Website bán hàng tốc độ cao, tối ưu SEO, hỗ trợ Responsive.',
+    budget: 25000000,
+    requiredSkills: 'Next.js, React, TailwindCSS, TypeScript, RESTful API',
+    maxFreelancers: 2,
+    status: 'OPEN',
+    deadline: '2026-09-15',
+    createdAt: '2026-08-04T10:00:00'
   },
   {
     id: 2,
+    clientId: 102,
+    clientEmail: 'startup.fintech@gmail.com',
     title: 'Thiết kế UI/UX App Mobile Quản lý Tài chính Cá nhân',
-    client: 'Fintech Startup',
-    type: 'Theo giờ',
-    budget: '250.000 - 350.000 VNĐ / giờ',
-    location: 'Remote',
-    postedAt: '5 giờ trước',
-    proposals: 14,
-    skills: ['Figma', 'Mobile UI', 'Prototyping', 'User Research'],
-    urgent: false
+    description: 'Thiết kế Wireframe và Prototype cho ứng dụng Android/iOS với màu sắc chủ đạo xanh lá hiện đại.',
+    budget: 18000000,
+    requiredSkills: 'Figma, Mobile UI, Prototyping, User Research',
+    maxFreelancers: 1,
+    status: 'OPEN',
+    deadline: '2026-08-30',
+    createdAt: '2026-08-04T12:30:00'
   },
   {
     id: 3,
+    clientId: 103,
+    clientEmail: 'logistics.global@gmail.com',
     title: 'Lập trình Backend Spring Boot cho Hệ thống Đặt vé',
-    client: 'Global Logistics JSC',
-    type: 'Dự án trọn gói',
-    budget: '30.000.000 - 45.000.000 VNĐ',
-    location: 'TP. Hồ Chí Minh / Remote',
-    postedAt: '1 ngày trước',
-    proposals: 6,
-    skills: ['Java', 'Spring Boot', 'PostgreSQL', 'Microservices', 'Docker'],
-    urgent: true
+    description: 'Xây dựng RESTful API kết nối PostgreSQL, phân quyền JWT, quản lý lịch đặt vé và thanh toán trực tuyến.',
+    budget: 45000000,
+    requiredSkills: 'Java, Spring Boot, PostgreSQL, Microservices, Docker',
+    maxFreelancers: 3,
+    status: 'OPEN',
+    deadline: '2026-10-01',
+    createdAt: '2026-08-03T15:45:00'
   }
 ];
 
@@ -163,6 +168,3 @@ export const HOW_IT_WORKS_STEPS = [
     description: 'Tiền được giữ an toàn trên hệ thống cho tới khi dự án được nghiệm thu đạt yêu cầu.',
   },
 ];
-
-
-
