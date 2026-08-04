@@ -1,19 +1,31 @@
+'use client';
+
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { ProjectResponse } from '@/types/api';
-import { Clock, MapPin, Users, Building2, Calendar } from 'lucide-react';
+import { Building2, Calendar, Users } from 'lucide-react';
 
 interface JobCardProps {
   project: ProjectResponse;
 }
 
 export function JobCard({ project }: JobCardProps) {
+  const router = useRouter();
+
   // Split requiredSkills String ("Next.js, React, TailwindCSS") into Array
   const skillsList = project.requiredSkills
     ? project.requiredSkills.split(',').map((s) => s.trim())
     : [];
 
+  const handleCardClick = () => {
+    router.push(`/jobs/${project.id}`);
+  };
+
   return (
-    <div className="bg-white p-6 rounded-2xl border border-slate-200 hover:border-emerald-500 hover:shadow-md transition-all duration-200 flex flex-col sm:flex-row sm:items-start justify-between gap-6 ">
+    <div
+      onClick={handleCardClick}
+      className="bg-white p-6 rounded-2xl border border-slate-200 hover:border-emerald-500 hover:shadow-md transition-all duration-200 flex flex-col sm:flex-row sm:items-start justify-between gap-6 cursor-pointer group"
+    >
       <div className="space-y-3 flex-1 min-w-0">
         <div className="flex items-center space-x-3 flex-wrap gap-y-2">
           <span className="bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold px-2.5 py-0.5 rounded-full uppercase">
@@ -29,8 +41,8 @@ export function JobCard({ project }: JobCardProps) {
           </span>
         </div>
 
-        <h3 className="text-lg sm:text-xl font-bold text-slate-900 hover:text-emerald-600 transition-colors leading-snug">
-          <Link href={`/jobs/${project.id}`}>{project.title}</Link>
+        <h3 className="text-lg sm:text-xl font-bold text-slate-900 group-hover:text-emerald-600 transition-colors leading-snug">
+          {project.title}
         </h3>
 
         <p className="text-sm text-slate-600 line-clamp-2 leading-relaxed">
@@ -60,6 +72,7 @@ export function JobCard({ project }: JobCardProps) {
       <div className="shrink-0 flex sm:flex-col items-center justify-between sm:justify-start gap-3 pt-4 sm:pt-0 border-t sm:border-t-0 border-slate-100">
         <Link
           href={`/jobs/${project.id}`}
+          onClick={(e) => e.stopPropagation()}
           className="gradient-button text-white font-medium text-sm px-6 py-2.5 rounded-xl text-center w-full sm:w-auto shadow-sm whitespace-nowrap"
         >
           Gửi Báo Giá
