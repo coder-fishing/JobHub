@@ -8,7 +8,7 @@ import {
   CreateProjectForm,
   CreateProjectSuccess,
   CreateProjectFormData,
-} from '@/components/jobs/create';
+} from '@/components/features/jobs/create';
 
 export default function CreateProjectPage() {
   const router = useRouter();

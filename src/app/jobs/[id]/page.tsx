@@ -4,7 +4,7 @@ import { use, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { ProjectResponse } from '@/types/api';
-import { JobCardSkeleton } from '@/components/Card/Skeletons';
+import { JobCardSkeleton } from '@/components/ui/Skeletons';
 import { projectService } from '@/services/projectService';
 import {
   JobDetailHeader,
@@ -12,7 +12,7 @@ import {
   JobProposalForm,
   JobClientSidebar,
   JobNotFound,
-} from '@/components/jobs/detail';
+} from '@/components/features/jobs/detail';
 
 export default function JobDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);

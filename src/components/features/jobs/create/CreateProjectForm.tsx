@@ -10,7 +10,7 @@ import {
   Send, 
   AlertCircle 
 } from 'lucide-react';
-import { FormInput, FormTextarea } from '@/components/Form/FormControls';
+import { FormInput, FormTextarea } from '@/components/ui/FormControls';
 
 export interface CreateProjectFormData {
   title: string;

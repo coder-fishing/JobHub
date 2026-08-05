@@ -1,9 +1,9 @@
 import Link from 'next/link';
-import { CategoryCard } from '@/components/Card/CategoryCard';
-import { JobCard } from '@/components/Card/JobCard';
-import { FreelancerCard } from '@/components/Card/FreelancerCard';
-import { StatsRow } from '@/components/Stats/StatsRow';
-import { StepItem } from '@/components/Steps/StepItem';
+import { CategoryCard } from '@/components/features/home/CategoryCard';
+import { JobCard } from '@/components/features/jobs/JobCard';
+import { FreelancerCard } from '@/components/features/home/FreelancerCard';
+import { StatsRow } from '@/components/features/home/StatsRow';
+import { StepItem } from '@/components/features/home/StepItem';
 import { 
   CATEGORIES, 
   MOCK_PROJECTS_API, 

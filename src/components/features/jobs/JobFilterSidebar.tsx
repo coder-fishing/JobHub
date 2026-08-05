@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Search, SlidersHorizontal, RotateCcw } from 'lucide-react';
-import { CheckboxFilterGroup, RangeFilterGroup } from '@/components/Filter/FilterGroups';
+import { CheckboxFilterGroup, RangeFilterGroup } from './FilterGroups';
 
 interface JobFilterSidebarProps {
   onSearchChange: (query: string) => void;

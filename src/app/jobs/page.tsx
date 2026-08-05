@@ -1,11 +1,11 @@
 'use client';
 
-import { JobCard } from '@/components/Card/JobCard';
-import { JobCardSkeleton } from '@/components/Card/Skeletons';
-import JobFilterSidebar from '@/components/Filter/JobFilterSidebar';
+import { JobCard } from '@/components/features/jobs/JobCard';
+import { JobCardSkeleton } from '@/components/ui/Skeletons';
+import JobFilterSidebar from '@/components/features/jobs/JobFilterSidebar';
 import { RefreshCw } from 'lucide-react';
 import { useProjects } from '@/hooks/useProjects';
-import { JobsHeaderBanner, EmptyJobList } from '@/components/jobs/list';
+import { JobsHeaderBanner, EmptyJobList } from '@/components/features/jobs/list';
 
 export default function JobsPage() {
   const {
