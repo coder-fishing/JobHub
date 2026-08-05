@@ -89,7 +89,7 @@ export default function Navbar() {
                 Đăng Ký
               </Link>
               <Link
-                href="/post-job"
+                href="/jobs/create"
                 className="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-medium text-sm px-5 py-2.5 rounded-full border border-emerald-200 transition-all"
               >
                 Đăng Dự Án

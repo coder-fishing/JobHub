@@ -15,6 +15,15 @@ export interface ProjectFilterParams {
   sortBy?: 'newest' | 'budget_high' | 'budget_low';
 }
 
+export interface CreateProjectPayload {
+  title: string;
+  description: string;
+  budget: number;
+  requiredSkills: string;
+  maxFreelancers: number;
+  deadline: string;
+}
+
 export const projectService = {
   /**
    * Fetch and filter project list
@@ -82,6 +91,30 @@ export const projectService = {
   },
 
   /**
+   * Create a new project
+   */
+  async createProject(payload: CreateProjectPayload): Promise<ProjectResponse> {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    const newProject: ProjectResponse = {
+      id: Date.now(),
+      clientId: 101,
+      clientEmail: 'client.company@workhub.io',
+      title: payload.title,
+      description: payload.description,
+      budget: payload.budget,
+      requiredSkills: payload.requiredSkills,
+      maxFreelancers: payload.maxFreelancers,
+      status: 'OPEN',
+      deadline: payload.deadline,
+      createdAt: new Date().toISOString(),
+    };
+    
+    // Thêm vào mock data local
+    MOCK_PROJECTS_API.unshift(newProject);
+    return newProject;
+  },
+
+  /**
    * Submit proposal for a project
    */
   async submitProposal(payload: ProposalPayload): Promise<{ success: boolean }> {
@@ -94,4 +127,5 @@ export const projectService = {
     return { success: true };
   },
 };
+
 

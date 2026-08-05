@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { Briefcase } from 'lucide-react';
 
 interface JobsHeaderBannerProps {
@@ -23,23 +24,31 @@ export function JobsHeaderBanner({ sortBy, onSortChange }: JobsHeaderBannerProps
             </p>
           </div>
 
-          <div className="flex items-center space-x-3 bg-slate-100 p-1.5 rounded-xl border border-slate-200 self-start md:self-auto">
-            <span className="text-xs text-slate-500 font-medium pl-2">Sắp xếp:</span>
-            <select
-              value={sortBy}
-              onChange={(e) => onSortChange(e.target.value as any)}
-              className="bg-white text-xs font-medium text-slate-800 rounded-lg px-3 py-2 border border-slate-200 focus:outline-none focus:border-emerald-500"
+          <div className="flex items-center space-x-3 self-start md:self-auto">
+            <Link
+              href="/jobs/create"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs px-4 py-2.5 rounded-xl transition-colors shadow-sm"
             >
-              <option value="newest" className="text-slate-800">
-                Mới nhất
-              </option>
-              <option value="budget_high" className="text-slate-800">
-                Ngân sách cao nhất
-              </option>
-              <option value="budget_low" className="text-slate-800">
-                Ngân sách thấp nhất
-              </option>
-            </select>
+              + Đăng Dự Án Mới
+            </Link>
+            <div className="flex items-center space-x-3 bg-slate-100 p-1.5 rounded-xl border border-slate-200">
+              <span className="text-xs text-slate-500 font-medium pl-2">Sắp xếp:</span>
+              <select
+                value={sortBy}
+                onChange={(e) => onSortChange(e.target.value as any)}
+                className="bg-white text-xs font-medium text-slate-800 rounded-lg px-3 py-2 border border-slate-200 focus:outline-none focus:border-emerald-500"
+              >
+                <option value="newest" className="text-slate-800">
+                  Mới nhất
+                </option>
+                <option value="budget_high" className="text-slate-800">
+                  Ngân sách cao nhất
+                </option>
+                <option value="budget_low" className="text-slate-800">
+                  Ngân sách thấp nhất
+                </option>
+              </select>
+            </div>
           </div>
         </div>
       </div>
