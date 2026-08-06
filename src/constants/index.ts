@@ -1,4 +1,4 @@
-import { ProjectResponse } from '@/types/api';
+import { ProjectResponse, FreelancerProfileResponse } from '@/types/api';
 import { 
   Code2, 
   Palette, 
@@ -55,12 +55,70 @@ export const MOCK_PROJECTS_API: ProjectResponse[] = [
     clientEmail: 'logistics.global@gmail.com',
     title: 'Lập trình Backend Spring Boot cho Hệ thống Đặt vé',
     description: 'Xây dựng RESTful API kết nối PostgreSQL, phân quyền JWT, quản lý lịch đặt vé và thanh toán trực tuyến.',
-    budget: 45000000,
+    budget: 4500000,
     requiredSkills: 'Java, Spring Boot, PostgreSQL, Microservices, Docker',
     maxFreelancers: 3,
     status: 'OPEN',
     deadline: '2026-10-01',
     createdAt: '2026-08-03T15:45:00'
+  }
+];
+
+export const MOCK_FREELANCERS_API: FreelancerProfileResponse[] = [
+  {
+    id: 1,
+    userId: 201,
+    userEmail: 'minh.nguyen@workhub.io',
+    fullName: 'Nguyễn Văn Minh',
+    title: 'Senior Fullstack Developer (React, Next.js, Spring Boot)',
+    bio: 'Hơn 6 năm kinh nghiệm phát triển Web App quy mô lớn. Chuyên gia về Next.js performance, Spring Boot microservices và tối ưu hóa cơ sở dữ liệu.',
+    skills: 'React, Next.js, TypeScript, Spring Boot, Java, PostgreSQL, Docker',
+    hourlyRate: 350000,
+    rating: 4.9,
+  },
+  {
+    id: 2,
+    userId: 202,
+    userEmail: 'phamnhuquoctrieu307@gmail.com',
+    fullName: 'Phạm Như Quốc Triều',
+    title: 'Lead, FullstackDev, UI/UX Designer, Figma Expert, Design System, Prototyping, User Research',
+    bio: 'Tốt Nghiệp Trường VKU, Ngu Như Con Bò',
+    skills: 'ReactJS, NextJS, TailwindCSS, Figma, UI/UX Design, Prototyping, User Research, JavaSpringBoot',
+    hourlyRate: 10000000,
+    rating: 5.0,
+  },
+  {
+    id: 3,
+    userId: 203,
+    userEmail: 'thialythikimmocthuyhoatho@meomeo.kem',
+    fullName: 'Lý Thị Kim Mộc Thủy Hỏa Thoa',
+    title: 'DevOps & Cloud Solutions Architect',
+    bio: 'Chuyên gia hạ tầng đám mây AWS & GCP. Thành thạo dựng CI/CD pipeline tự động hóa, Kubernetes cluster và bảo mật hạ tầng doanh nghiệp.',
+    skills: 'AWS, Docker, Kubernetes, CI/CD, Terraform, Linux, NGINX',
+    hourlyRate: 450000,
+    rating: 4.8,
+  },
+  {
+    id: 4,
+    userId: 204,
+    userEmail: 'phuong.pham@workhub.io',
+    fullName: 'Phạm Minh Phương',
+    title: 'Mobile App Developer (Flutter & React Native)',
+    bio: 'Phát triển ứng dụng di động đa nền tảng Android/iOS. Đã có 15+ App phát hành trên App Store & Google Play với lượt tải hơn 100k+.',
+    skills: 'Flutter, React Native, Dart, Mobile UI, Firebase, RESTful API',
+    hourlyRate: 300000,
+    rating: 4.9,
+  },
+  {
+    id: 5,
+    userId: 205,
+    userEmail: 'vu.hoang@workhub.io',
+    fullName: 'Hoàng Quốc Vũ',
+    title: 'Data Engineer & Machine Learning Specialist',
+    bio: 'Xây dựng đường ống xử lý dữ liệu lớn Big Data, triển khai mô hình AI/ML dự đoán thị trường và phân tích dữ liệu kinh doanh.',
+    skills: 'Python, PyTorch, SQL, Spark, Data Engineering, Pandas, Machine Learning',
+    hourlyRate: 500000,
+    rating: 4.7,
   }
 ];
 
@@ -78,13 +136,13 @@ export const TOP_FREELANCERS = [
   },
   {
     id: 2,
-    name: 'Trần Thị Thu Hà',
-    role: 'Lead UI/UX Designer',
+    name: 'Phạm Như Quốc Triều',
+    role: 'Ông Nội',
     rating: 5.0,
-    reviews: 64,
-    hourlyRate: '400.000 VNĐ/giờ',
+    reviews: 99,
+    hourlyRate: '10.000.000 VNĐ/giờ',
     completedJobs: 71,
-    skills: ['Figma', 'UI/UX Design', 'Design System', 'Wireframing'],
+    skills: ['Java', 'TypeScript','Js', 'Design System', 'Wireframing'],
     avatarBg: 'from-purple-400 to-indigo-600'
   },
   {
