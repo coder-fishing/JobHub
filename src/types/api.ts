@@ -33,3 +33,17 @@ export interface UpdateFreelancerProfilePayload {
   hourlyRate: number;
 }
 
+export interface ProposalResponse {
+  id: number;
+  projectId: number;
+  projectTitle: string;
+  freelancerId: number;
+  freelancerName: string;
+  freelancerEmail: string;
+  proposalBid: number;
+  coverLetter: string;
+  status: 'PENDING' | 'ACCEPTED' | 'REJECTED';
+  createdAt: string;
+}
+
+
