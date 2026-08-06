@@ -1,5 +1,3 @@
-'use client';
-
 import React from 'react';
 import Link from 'next/link';
 import { 
@@ -11,6 +9,7 @@ import {
   AlertCircle 
 } from 'lucide-react';
 import { FormInput, FormTextarea } from '@/components/ui/FormControls';
+import { SkillsInput } from '@/components/ui/SkillsInput';
 
 export interface CreateProjectFormData {
   title: string;
@@ -28,6 +27,7 @@ interface CreateProjectFormProps {
   onChange: (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => void;
+  onSkillsChange: (newSkills: string) => void;
   onSubmit: (e: React.FormEvent) => void;
 }
 
@@ -36,6 +36,7 @@ export function CreateProjectForm({
   errorMsg,
   isSubmitting,
   onChange,
+  onSkillsChange,
   onSubmit,
 }: CreateProjectFormProps) {
   const todayStr = new Date().toISOString().split('T')[0];
@@ -70,14 +71,13 @@ export function CreateProjectForm({
         placeholder="Chi tiết về các tính năng cần phát triển, yêu cầu về kiến trúc, tài liệu đính kèm..."
       />
 
-      {/* Required Skills */}
-      <FormInput
+      {/* Required Skills Tag Input */}
+      <SkillsInput
         label="Kỹ năng & Công nghệ yêu cầu"
-        name="requiredSkills"
         icon={Code2}
         value={formData.requiredSkills}
-        onChange={onChange}
-        placeholder="Phân cách bằng dấu phẩy. Ví dụ: React, TypeScript, Node.js, TailwindCSS"
+        onChange={onSkillsChange}
+        placeholder="Nhập tên kỹ năng (vd: Next.js, Java) rồi nhấn Enter..."
       />
 
       {/* Grid 3 Columns: Budget, Max Freelancers, Deadline */}

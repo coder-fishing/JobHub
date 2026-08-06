@@ -77,6 +77,12 @@ export default function Navbar() {
 
             <div className="flex items-center space-x-3">
               <Link
+                href="/profile"
+                className="text-slate-700 hover:text-slate-900 font-medium text-sm px-4 py-2.5 rounded-full transition-colors hover:bg-slate-100"
+              >
+                Hồ Sơ Cá Nhân
+              </Link>
+              <Link
                 href="/login"
                 className="text-slate-700 hover:text-slate-900 font-medium text-sm px-4 py-2.5 rounded-full transition-colors hover:bg-slate-100"
               >

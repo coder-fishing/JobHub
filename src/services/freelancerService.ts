@@ -1,5 +1,5 @@
 import { MOCK_FREELANCERS_API } from '@/constants';
-import { FreelancerProfileResponse } from '@/types/api';
+import { FreelancerProfileResponse, UpdateFreelancerProfilePayload } from '@/types/api';
 
 export interface FreelancerFilterParams {
   searchQuery?: string;
@@ -76,4 +76,38 @@ export const freelancerService = {
     const found = MOCK_FREELANCERS_API.find((f) => f.id === Number(id));
     return found || null;
   },
+
+  /**
+   * Get current logged-in user profile (Mock profile)
+   */
+  async getCurrentProfile(): Promise<FreelancerProfileResponse> {
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    return MOCK_FREELANCERS_API[0];
+  },
+
+  /**
+   * Update profile
+   */
+  async updateProfile(
+    id: number,
+    payload: UpdateFreelancerProfilePayload
+  ): Promise<FreelancerProfileResponse> {
+    await new Promise((resolve) => setTimeout(resolve, 800));
+    const targetIndex = MOCK_FREELANCERS_API.findIndex((f) => f.id === id);
+    
+    if (targetIndex !== -1) {
+      MOCK_FREELANCERS_API[targetIndex] = {
+        ...MOCK_FREELANCERS_API[targetIndex],
+        fullName: payload.fullName,
+        title: payload.title,
+        bio: payload.bio,
+        skills: payload.skills,
+        hourlyRate: payload.hourlyRate,
+      };
+      return MOCK_FREELANCERS_API[targetIndex];
+    }
+
+    throw new Error('Profile not found');
+  },
 };
+

@@ -80,6 +80,10 @@ export default function CreateProjectPage() {
     }
   };
 
+  const handleSkillsChange = (newSkills: string) => {
+    setFormData((prev) => ({ ...prev, requiredSkills: newSkills }));
+  };
+
   return (
     <div className="bg-slate-50 min-h-screen py-10">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -97,6 +101,7 @@ export default function CreateProjectPage() {
               errorMsg={errorMsg}
               isSubmitting={isSubmitting}
               onChange={handleChange}
+              onSkillsChange={handleSkillsChange}
               onSubmit={handleSubmit}
             />
           )}

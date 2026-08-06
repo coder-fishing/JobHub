@@ -24,3 +24,12 @@ export interface FreelancerProfileResponse {
   hourlyRate: number;
   rating: number;
 }
+
+export interface UpdateFreelancerProfilePayload {
+  fullName: string;
+  title: string;
+  bio: string;
+  skills: string;
+  hourlyRate: number;
+}
+
