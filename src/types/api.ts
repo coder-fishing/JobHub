@@ -70,5 +70,22 @@ export interface ContractResponse {
   milestones: MilestoneResponse[];
 }
 
+export interface ReviewPayload {
+  contractId: number;
+  rating: number; // 1 to 5
+  comment: string;
+}
+
+export interface ReviewResponse {
+  id: number;
+  contractId: number;
+  reviewerName: string;
+  reviewerRole: 'CLIENT' | 'FREELANCER';
+  rating: number;
+  comment: string;
+  createdAt: string;
+}
+
+
 
 

@@ -91,6 +91,25 @@ export default function ContractDetailPage({
         {/* Contract Header */}
         <ContractHeader contract={contract} />
 
+        {/* Review Action Banner */}
+        <div className="bg-amber-50 border border-amber-200/80 p-5 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div>
+            <h4 className="font-bold text-amber-900 text-sm">
+              Đánh Giá & Nhận Xét Hợp Đồng
+            </h4>
+            <p className="text-xs text-amber-700 mt-0.5">
+              Để lại đánh giá ⭐ từ 1 đến 5 sao về thái độ và chất lượng làm việc của đối tác
+            </p>
+          </div>
+
+          <Link
+            href={`/contracts/${contract.id}/review`}
+            className="px-5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold transition-colors shadow-sm shrink-0"
+          >
+            Đánh Giá Ngay
+          </Link>
+        </div>
+
         {/* Milestones & Escrow */}
         <MilestoneList
           milestones={contract.milestones}
