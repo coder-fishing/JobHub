@@ -46,4 +46,29 @@ export interface ProposalResponse {
   createdAt: string;
 }
 
+export interface MilestoneResponse {
+  id: number;
+  contractId: number;
+  title: string;
+  amount: number;
+  dueDate: string;
+  status: 'PENDING' | 'ESCROW_LOCKED' | 'SUBMITTED' | 'RELEASED';
+}
+
+export interface ContractResponse {
+  id: number;
+  projectId: number;
+  projectTitle: string;
+  clientId: number;
+  clientEmail: string;
+  freelancerId: number;
+  freelancerName: string;
+  freelancerEmail: string;
+  totalAmount: number;
+  status: 'ACTIVE' | 'COMPLETED' | 'CANCELLED';
+  createdAt: string;
+  milestones: MilestoneResponse[];
+}
+
+
 

@@ -64,10 +64,19 @@ export function FreelancerDashboardView({ proposals }: FreelancerDashboardViewPr
 
               <div>
                 {proposal.status === 'ACCEPTED' ? (
-                  <span className="bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1.5 rounded-xl inline-flex items-center space-x-1">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>Đã Được Khách Hàng Chấp Nhận!</span>
-                  </span>
+                  <div className="flex items-center space-x-2">
+                    <span className="bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1.5 rounded-xl inline-flex items-center space-x-1">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>Đã Được Chấp Nhận!</span>
+                    </span>
+                    <Link
+                      href="/contracts/1001"
+                      className="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-colors inline-flex items-center space-x-1"
+                    >
+                      <span>Xem Hợp Đồng & Làm Việc</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </Link>
+                  </div>
                 ) : proposal.status === 'REJECTED' ? (
                   <span className="bg-rose-100 text-rose-800 text-xs font-bold px-3 py-1.5 rounded-xl inline-flex items-center space-x-1">
                     <XCircle className="w-3.5 h-3.5 text-rose-600" />
