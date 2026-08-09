@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="8f4aa051-329e-4210-9b5f-91feca00b412" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitattributes" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/HELP.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Project_API_Postman_Collection.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradlew" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradlew.bat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/settings.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/DemoPrjInternApplication.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/config/SecurityConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/controller/AuthController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/controller/ContractController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/controller/FreelancerProfileController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/controller/MilestoneController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/controller/ProjectController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/controller/ProposalController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/controller/WalletController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/dto/request/AuthLoginRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/dto/request/ChooseRoleRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/dto/request/CreateContractRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/dto/request/CreateProjectRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/dto/request/DepositRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/dto/request/FreelancerRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/dto/request/LoginRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/dto/request/MilestoneRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/dto/request/MilestoneSubmissionRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/dto/request/Oauth2LoginRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/dto/request/ProposalRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/dto/request/RegisterRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/dto/request/UpdateProjectRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/dto/respone/AuthResponse.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/dto/respone/ContractResponse.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/dto/respone/ErrorResponse.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/dto/respone/FreelancerProfileRespone.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/dto/respone/MilestoneResponse.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/dto/respone/MilestoneSubmissionResponse.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/dto/respone/ProjectResponse.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/dto/respone/ProposalResponse.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/dto/respone/WalletResponse.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/dto/respone/WalletTransactionResponse.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/entity/ContractEntity.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/entity/FreelancerProfileEntity.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/entity/MilestoneEntity.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/entity/MilestoneSubmissionEntity.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/entity/ProjectEntity.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/entity/ProposalEntity.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/entity/UserEntity.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/entity/WalletEntity.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/entity/WalletTransactionEntity.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/exception/GlobalExceptionHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/repository/ContractRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/repository/FreelancerProfileRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/repository/MilestoneRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/repository/MilestoneSubmissionRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/repository/ProjectRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/repository/ProposalRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/repository/UserRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/repository/WalletRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/repository/WalletTransactionRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/service/AuthService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/service/ContractService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/service/FreelancerProfileService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/service/MilestoneService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/service/ProjectService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/service/ProposalService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/service/WalletService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/service/serviceImpl/AuthServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/service/serviceImpl/ContractServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/service/serviceImpl/FreelancerProfileServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/service/serviceImpl/MilestoneServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/service/serviceImpl/ProjectServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/service/serviceImpl/ProposalServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo_prj_intern/service/serviceImpl/WalletServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/example/demo_prj_intern/DemoPrjInternApplicationTests.java" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CopilotPersistence">
+    <persistenceIdMap>
+      <entry key="_D:/Learn_Java/Demo_Prj_Intern" value="3GlCvbgtjDTed5J9gybo1TPJIK5" />
+    </persistenceIdMap>
+  </component>
+  <component name="EmbeddingIndexingInfo">
+    <option name="cachedIndexableFilesCount" value="85" />
+  </component>
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Interface" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="KubernetesApiProvider">{
+  &quot;isMigrated&quot;: true
+}</component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
+  <component name="NextEditCompletionFeaturesState">
+    <decayedCancelled>
+      <entry key="MS100" value="1.0" />
+      <entry key="MS500" value="1.0000004004151788" />
+      <entry key="S2" value="1.025155198588214" />
+      <entry key="S5" value="1.2298799461517516" />
+      <entry key="S10" value="1.518977368211003" />
+      <entry key="S30" value="2.691001188957025" />
+      <entry key="S60" value="4.66759209023015" />
+      <entry key="M2" value="8.276045593534961" />
+      <entry key="M5" value="14.085026075912522" />
+      <entry key="M10" value="20.32059068239169" />
+      <entry key="M15" value="27.680963105871182" />
+      <entry key="M30" value="52.80505570378851" />
+      <entry key="H1" value="98.25358052157459" />
+      <entry key="H2" value="166.60604003802106" />
+      <entry key="H4" value="243.52338682487004" />
+      <entry key="D1" value="362.91502219340583" />
+      <entry key="W1" value="391.85968621120287" />
+    </decayedCancelled>
+    <decayedSelected>
+      <entry key="MS100" value="7.757646181411705E-200" />
+      <entry key="MS500" value="1.506422011205356E-40" />
+      <entry key="S2" value="1.1521206243969058E-10" />
+      <entry key="S5" value="1.4704184416526334E-4" />
+      <entry key="S10" value="0.021237533130501442" />
+      <entry key="S30" value="0.939504864989667" />
+      <entry key="S60" value="3.4092407847836" />
+      <entry key="M2" value="7.738965475756185" />
+      <entry key="M5" value="14.195314990102933" />
+      <entry key="M10" value="21.955619283262024" />
+      <entry key="M15" value="30.917659756876724" />
+      <entry key="M30" value="56.13862934588042" />
+      <entry key="H1" value="92.2058658276501" />
+      <entry key="H2" value="140.19275331290447" />
+      <entry key="H4" value="192.32047809692995" />
+      <entry key="D1" value="272.2720828333828" />
+      <entry key="W1" value="291.57437036152345" />
+    </decayedSelected>
+    <decayedShown>
+      <entry key="MS100" value="1.8272074960615982E-5" />
+      <entry key="MS500" value="0.11281270576256977" />
+      <entry key="S2" value="0.597956277524587" />
+      <entry key="S5" value="1.0069376181209142" />
+      <entry key="S10" value="1.4026231264214277" />
+      <entry key="S30" value="3.523742365422013" />
+      <entry key="S60" value="7.953361493521811" />
+      <entry key="M2" value="15.887786514274257" />
+      <entry key="M5" value="28.186610530459323" />
+      <entry key="M10" value="42.19891559076042" />
+      <entry key="M15" value="58.52214703230198" />
+      <entry key="M30" value="108.86821848722319" />
+      <entry key="H1" value="190.39190794700855" />
+      <entry key="H2" value="306.74461231567113" />
+      <entry key="H4" value="435.80616552786796" />
+      <entry key="D1" value="635.1782441461471" />
+      <entry key="W1" value="683.4327042961877" />
+    </decayedShown>
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 0,
+  &quot;fromUser&quot;: false
+}</component>
+  <component name="ProjectId" id="3GlCvbgtjDTed5J9gybo1TPJIK5" />
+  <component name="ProjectSessionTemplates">
+    <option name="panelTemplate">
+      <template>
+        <option name="modeId" value="Agent" />
+        <option name="model">
+          <model>
+            <option name="modelType" value="builtin_id" />
+            <option name="modelValue" value="auto" />
+          </model>
+        </option>
+        <option name="targetType" value="BACKGROUND" />
+        <option name="worktreeMode" value="WORKSPACE" />
+      </template>
+    </option>
+  </component>
+  <component name="ProjectViewState">
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Gradle.Build Demo_Prj_Intern.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "Spring Boot.DemoPrjInternApplication.executor": "Run",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "copilot.chat.legacySessionMetadata.migrated": "true",
+    "git-widget-placeholder": "main",
+    "junie.onboarding.icon.badge.shown": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "D:/Learn_Java/Demo_Prj_Intern/backend",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "to.speed.mode.migration.done": "true",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\Learn_Java\Demo_Prj_Intern\backend" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Learn_Java\Demo_Prj_Intern" />
+      <recent name="D:\Learn_Java\Demo_Prj_Intern\backend" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="DemoPrjInternApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
+      <module name="Demo_Prj_Intern.main" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.example.demo_prj_intern.DemoPrjInternApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-30f59d01ecdd-37e91769500f-intellij.indexing.shared.core-IU-261.25134.95" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="8f4aa051-329e-4210-9b5f-91feca00b412" name="Changes" comment="" />
+      <created>1784537005991</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1784537005991</updated>
+      <workItem from="1784537007413" duration="3765000" />
+      <workItem from="1784568523653" duration="1206000" />
+      <workItem from="1784615706082" duration="8456000" />
+      <workItem from="1784647918949" duration="5199000" />
+      <workItem from="1784701862995" duration="10787000" />
+      <workItem from="1785133746935" duration="7759000" />
+      <workItem from="1785170960804" duration="2425000" />
+      <workItem from="1785221152940" duration="7371000" />
+      <workItem from="1785251876941" duration="600000" />
+      <workItem from="1785307592663" duration="7287000" />
+      <workItem from="1785394611245" duration="1735000" />
+      <workItem from="1785914342693" duration="2991000" />
+      <workItem from="1786000647673" duration="1577000" />
+      <workItem from="1786275298838" duration="342000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>

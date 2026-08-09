@@ -1,0 +1,399 @@
+{
+	"info": {
+		"_postman_id": "8bfa5114-1e0e-436f-8a03-7cb7cd06be2e",
+		"name": "Project API Demo Intern",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth - Register Client",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"client@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"CLIENT\",\n  \"fullName\": \"Nguyen Van A\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/auth/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"auth",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Auth - Register Freelancer",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"freelancer@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"FREELANCER\",\n  \"fullName\": \"Nguyen Van B\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/auth/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"auth",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Project - Create Project",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"title\": \"Xây dựng website bán hàng Ecommerce\",\n  \"description\": \"Cần tuyển lập trình viên xây dựng website bán hàng bằng Spring Boot và ReactJS.\",\n  \"budget\": 15000000.00,\n  \"requirements\": \"Java, Spring Boot, ReactJS, PostgreSQL\",\n  \"deadline\": \"2026-12-31\",\n  \"maxFreelancers\": 2\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/project?clientId=1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"project"
+					],
+					"query": [
+						{
+							"key": "clientId",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Proposal - Submit Proposal (Apply)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"projectId\": 1,\n  \"freelancerId\": 2,\n  \"bidAmount\": 12000000.00,\n  \"estimatedDays\": 15,\n  \"coverLetter\": \"Chào bạn, tôi có 3 năm kinh nghiệm lập trình Spring Boot và ReactJS.\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/proposal",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"proposal"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Proposal - Client Accept Proposal (Duyệt)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/proposal/1/accept?clientId=1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"proposal",
+						"1",
+						"accept"
+					],
+					"query": [
+						{
+							"key": "clientId",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Contract - Create Contract (Tạo hợp đồng)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"projectId\": 1,\n  \"proposalId\": 1\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/contract?clientId=1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"contract"
+					],
+					"query": [
+						{
+							"key": "clientId",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Milestone - Create Milestone (Tạo cột mốc)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"contractId\": 1,\n  \"title\": \"Giai đoạn 1: Thiết kế giao diện UI/UX\",\n  \"description\": \"Hoàn thiện wireframe và thiết kế Figma cho toàn bộ ứng dụng\",\n  \"amount\": 3000000.00,\n  \"deadline\": \"2026-10-15T23:59:59\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/milestone?clientId=1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"milestone"
+					],
+					"query": [
+						{
+							"key": "clientId",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Milestone - Freelancer Submit Work (Nộp bài)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"milestoneId\": 1,\n  \"freelancerNote\": \"Đã hoàn thành thiết kế Figma theo yêu cầu, gửi đính kèm link Figma.\",\n  \"submissionUrl\": \"https://figma.com/file/sample-design\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/milestone/submit?freelancerId=2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"milestone",
+						"submit"
+					],
+					"query": [
+						{
+							"key": "freelancerId",
+							"value": "2"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Wallet - Get Client Wallet (Xem số dư ví Client)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/wallet/user/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"wallet",
+						"user",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Wallet - Deposit Money (Client Nạp tiền vào ví)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"userId\": 1,\n  \"amount\": 10000000.00\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/wallet/deposit",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"wallet",
+						"deposit"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Wallet - Pay Milestone (Client Giải ngân tiền cho Freelancer)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/wallet/pay-milestone/1?clientId=1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"wallet",
+						"pay-milestone",
+						"1"
+					],
+					"query": [
+						{
+							"key": "clientId",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Wallet - Get Freelancer Wallet (Xem ví Freelancer đã nhận tiền)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/wallet/user/2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"wallet",
+						"user",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Wallet - Get Transactions (Lịch sử giao dịch ví)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/wallet/transactions/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"wallet",
+						"transactions",
+						"1"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

@@ -1,0 +1,25 @@
+# Build and Cache Directories
+.gradle/
+build/
+bin/
+out/
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+.classpath
+.project
+.settings/
+
+# Log files
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Temporary scratch files
+scratch/
