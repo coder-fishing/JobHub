@@ -42,4 +42,7 @@ public class FreelancerProfileEntity {
 
     @Column(name = "portfolio_url", length = 255)
     private String portfolioUrl;
+
+    @Column(name = "avatar_url", length = 500)
+    private String avatarUrl;
 }

@@ -15,4 +15,5 @@ public class FreelancerProfileRespone {
     private String skills;
     private BigDecimal hourlyRate;
     private String portfolioUrl;
+    private String avatarUrl;
 }
