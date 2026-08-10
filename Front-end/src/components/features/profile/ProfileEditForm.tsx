@@ -9,6 +9,7 @@ export interface ProfileFormData {
   bio: string;
   skills: string;
   hourlyRate: string;
+  avatarUrl?: string;
 }
 
 interface ProfileEditFormProps {
@@ -21,6 +22,7 @@ interface ProfileEditFormProps {
   ) => void;
   onSkillsChange: (newSkills: string) => void;
   onSubmit: (e: React.FormEvent) => void;
+  isClient?: boolean;
 }
 
 export function ProfileEditForm({
@@ -31,6 +33,7 @@ export function ProfileEditForm({
   onChange,
   onSkillsChange,
   onSubmit,
+  isClient = false,
 }: ProfileEditFormProps) {
   return (
     <form onSubmit={onSubmit} className="bg-white p-8 rounded-3xl border border-slate-200 shadow-xs space-y-6">
@@ -66,52 +69,64 @@ export function ProfileEditForm({
 
         {/* Title */}
         <FormInput
-          label="Chức danh / Chuyên môn"
+          label={isClient ? "Công ty / Tổ chức" : "Chức danh / Chuyên môn"}
           name="title"
-          required
+          required={!isClient}
           icon={Briefcase}
           value={formData.title}
           onChange={onChange}
-          placeholder="Senior Fullstack Developer"
+          placeholder={isClient ? "Công ty TNHH TechVision" : "Senior Fullstack Developer"}
         />
       </div>
+
+      {/* Avatar URL */}
+      <FormInput
+        label="Đường dẫn Ảnh Đại Diện (Avatar URL)"
+        name="avatarUrl"
+        icon={User}
+        value={formData.avatarUrl || ''}
+        onChange={onChange}
+        placeholder="https://images.unsplash.com/photo-..."
+      />
 
       {/* Bio */}
       <FormTextarea
-        label="Giới thiệu bản thân / Tiểu sử (Bio)"
+        label={isClient ? "Giới thiệu Công ty / Nhu cầu tuyển dụng" : "Giới thiệu bản thân / Tiểu sử (Bio)"}
         name="bio"
-        rows={5}
-        required
+        rows={4}
+        required={!isClient}
         value={formData.bio}
         onChange={onChange}
-        placeholder="Mô tả kinh nghiệm, số năm làm việc, các thế mạnh dự án..."
+        placeholder="Mô tả chi tiết để cộng đồng hiểu rõ hơn về bạn..."
       />
 
-      <div className="space-y-4">
-        {/* Skills Tag Input */}
-        <SkillsInput
-          label="Kỹ năng & Công nghệ"
-          icon={Code2}
-          value={formData.skills}
-          onChange={onSkillsChange}
-          placeholder="Nhập tên kỹ năng (vd: Next.js, Java) rồi nhấn Enter..."
-        />
+      {!isClient && (
+        <div className="space-y-4">
+          {/* Skills Tag Input */}
+          <SkillsInput
+            label="Kỹ năng & Công nghệ"
+            icon={Code2}
+            value={formData.skills}
+            onChange={onSkillsChange}
+            placeholder="Nhập tên kỹ năng (vd: Next.js, Java) rồi nhấn Enter..."
+          />
 
-        {/* Hourly Rate */}
-        <FormInput
-          label="Mức giá theo giờ (VNĐ/h)"
-          type="number"
-          name="hourlyRate"
-          required
-          min="50000"
-          step="50000"
-          icon={DollarSign}
-          value={formData.hourlyRate}
-          onChange={onChange}
-          placeholder="350000"
-          className="font-semibold text-emerald-600"
-        />
-      </div>
+          {/* Hourly Rate */}
+          <FormInput
+            label="Mức giá theo giờ (VNĐ/h)"
+            type="number"
+            name="hourlyRate"
+            required
+            min="50000"
+            step="50000"
+            icon={DollarSign}
+            value={formData.hourlyRate}
+            onChange={onChange}
+            placeholder="350000"
+            className="font-semibold text-emerald-600"
+          />
+        </div>
+      )}
 
       {/* Submit Button */}
       <div className="pt-4 border-t border-slate-100 flex justify-end">
