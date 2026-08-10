@@ -53,6 +53,7 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
         if (request.getSkills() != null) profile.setSkills(request.getSkills());
         if (request.getHourlyRate() != null) profile.setHourlyRate(request.getHourlyRate());
         if (request.getPortfolioUrl() != null) profile.setPortfolioUrl(request.getPortfolioUrl());
+        if (request.getAvatarUrl() != null) profile.setAvatarUrl(request.getAvatarUrl());
 
         // Lưu xuống Database
         FreelancerProfileEntity savedProfile = freelancerProfileRepository.save(profile);
@@ -76,6 +77,7 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
         response.setSkills(entity.getSkills());
         response.setHourlyRate(entity.getHourlyRate());
         response.setPortfolioUrl(entity.getPortfolioUrl());
+        response.setAvatarUrl(entity.getAvatarUrl());
 
         return response;
     }
