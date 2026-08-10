@@ -1,7 +1,6 @@
 package com.example.demo_prj_intern.service.serviceImpl;
 
 import com.example.demo_prj_intern.dto.request.ChooseRoleRequest;
-
 import com.example.demo_prj_intern.dto.request.LoginRequest;
 import com.example.demo_prj_intern.dto.request.Oauth2LoginRequest;
 import com.example.demo_prj_intern.dto.request.RegisterRequest;
@@ -12,13 +11,13 @@ import com.example.demo_prj_intern.entity.WalletEntity;
 import com.example.demo_prj_intern.repository.FreelancerProfileRepository;
 import com.example.demo_prj_intern.repository.UserRepository;
 import com.example.demo_prj_intern.repository.WalletRepository;
+import com.example.demo_prj_intern.security.JwtProvider;
 import com.example.demo_prj_intern.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.beans.Encoder;
 import java.math.BigDecimal;
 import java.util.Optional;
 
@@ -30,6 +29,7 @@ public class AuthServiceImpl implements AuthService {
     private final WalletRepository walletRepository;
     private final FreelancerProfileRepository freelancerProfileRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtProvider jwtProvider;
 
     // Đăng Ký Tài Khoản Mới
     @Transactional
@@ -39,11 +39,7 @@ public class AuthServiceImpl implements AuthService {
         if (userRepository.existsByEmail(registerRequest.getEmail())) {
             throw new RuntimeException("Email đã tồn tại");
         }
-        /*
-            Entity là đối tượng chứa Dữ liệu (Data/State),
-            không phải đối tượng chứa Logic (Service/Repository),
-            nên nó không bao giờ được quản lý bởi Spring Container để mà DI (Inject).
-        * */
+        
         UserEntity user = new UserEntity();
         user.setEmail(registerRequest.getEmail());
 
@@ -69,14 +65,14 @@ public class AuthServiceImpl implements AuthService {
             freelancerProfileEntity.setUser(user);
             String fullNameInput = registerRequest.getFullName();
 
-            // Kiểm tra: Không null VÀ có độ dài lớn hơn "" (sau khi đã trim bỏ khoảng trắng thừa)
             boolean hasValidName = fullNameInput != null && !fullNameInput.trim().isEmpty();
             freelancerProfileEntity.setFullName(hasValidName ? fullNameInput.trim() : "FreeLancer " + user.getId());
 
             freelancerProfileRepository.save(freelancerProfileEntity);
         }
-
-        return new AuthResponse(user.getId(), user.getEmail(), user.getRole(), user.getStatus(), null);
+        
+        String token = jwtProvider.generateToken(user.getEmail(), user.getRole());
+        return new AuthResponse(user.getId(), user.getEmail(), user.getRole(), user.getStatus(), token);
     }
 
     // Đăng Nhập Bằng Email Và Mật Khẩu
@@ -93,7 +89,8 @@ public class AuthServiceImpl implements AuthService {
             throw new RuntimeException("Tài khoản của bạn đã bị khóa!");
         }
 
-        return new AuthResponse(user.getId(), user.getEmail(), user.getRole(), user.getStatus(), "SAMPLE_JWT_TOKEN");
+        String token = jwtProvider.generateToken(user.getEmail(), user.getRole());
+        return new AuthResponse(user.getId(), user.getEmail(), user.getRole(), user.getStatus(), token);
     }
 
     // Đăng Nhập Bằng OAuth2 (Google, Facebook, GitHub)
@@ -104,30 +101,29 @@ public class AuthServiceImpl implements AuthService {
         UserEntity user;
 
         if(optionalUser.isPresent()) {
-            // Có tài khoản, kiểm tra provider
             user = optionalUser.get();
+            if ("BLOCKED".equalsIgnoreCase(user.getStatus())) {
+                throw new RuntimeException("Tài khoản của bạn đã bị khóa");
+            }
         }
-
         else {
-            // Chưa có tài khoản, tạo mới
             user = new UserEntity();
             user.setEmail(request.getEmail());
-            user.setRole("CLIENT"); // Mặc định là CLIENT, người dùng có thể chọn lại sau
+            user.setRole("CLIENT"); // Mặc định là CLIENT
             user.setAuthProvider(request.getProvider());
             user.setPassword("");
             user.setStatus("ACTIVE");
             user = userRepository.save(user);
 
-            // Tự Động Khởi Tạo Ví Cho Người Dùng Mới
             WalletEntity wallet = new WalletEntity();
             wallet.setUser(user);
             wallet.setBalance(BigDecimal.ZERO);
             wallet.setFreezingBalance(BigDecimal.ZERO);
             walletRepository.save(wallet);
-
         }
 
-        return new AuthResponse(user.getId(), user.getEmail(), user.getRole(), user.getStatus(), "SAMPLE_JWT_TOKEN");
+        String token = jwtProvider.generateToken(user.getEmail(), user.getRole());
+        return new AuthResponse(user.getId(), user.getEmail(), user.getRole(), user.getStatus(), token);
     }
 
     // Chọn Role Cho Người Dùng Mới Đăng Nhập Bằng OAuth2
@@ -141,19 +137,58 @@ public class AuthServiceImpl implements AuthService {
         userRepository.save(user);
 
         if("FREELANCER".equals(request.getRole())) {
-            FreelancerProfileEntity freelancerProfileEntity = new FreelancerProfileEntity();
-            freelancerProfileEntity.setUser(user);
-            freelancerProfileEntity.setFullName(request.getFullName() != null
-                    ? request.getFullName()
-                    : "FreeLancer " + user.getId() );
-            freelancerProfileRepository.save(freelancerProfileEntity);
+            Optional<FreelancerProfileEntity> existingProfile = freelancerProfileRepository.findByUserId(user.getId());
+            if (existingProfile.isEmpty()) {
+                FreelancerProfileEntity freelancerProfileEntity = new FreelancerProfileEntity();
+                freelancerProfileEntity.setUser(user);
+                freelancerProfileEntity.setFullName(request.getFullName() != null
+                        ? request.getFullName()
+                        : "FreeLancer " + user.getId() );
+                freelancerProfileRepository.save(freelancerProfileEntity);
+            }
         }
 
-        return new AuthResponse(user.getId(), user.getEmail(), user.getRole(), user.getStatus(), "SAMPLE_JWT_TOKEN");
+        String token = jwtProvider.generateToken(user.getEmail(), user.getRole());
+        return new AuthResponse(user.getId(), user.getEmail(), user.getRole(), user.getStatus(), token);
     }
 
     @Override
     public void logout(Long userId) {
-        // Xử lý logout, ví dụ xóa token khỏi cơ sở dữ liệu hoặc cache
+        // Hiện tại chỉ dùng JWT stateless không có blacklist, logic logout sẽ được frontend clear token
+    }
+
+    @Override
+    public com.example.demo_prj_intern.dto.respone.CurrentUserResponse getCurrentUser() {
+        org.springframework.security.core.Authentication authentication = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
+            throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.UNAUTHORIZED, "Chưa đăng nhập");
+        }
+
+        String email = authentication.getName();
+        UserEntity user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.NOT_FOUND, "Không tìm thấy người dùng"));
+
+        boolean profileCompleted = true; // mặc định true cho CLIENT
+
+        if ("FREELANCER".equals(user.getRole())) {
+            profileCompleted = false;
+            Optional<FreelancerProfileEntity> optionalProfile = freelancerProfileRepository.findByUserId(user.getId());
+            if (optionalProfile.isPresent()) {
+                FreelancerProfileEntity profile = optionalProfile.get();
+                if (profile.getTitle() != null && !profile.getTitle().trim().isEmpty() &&
+                    profile.getBio() != null && !profile.getBio().trim().isEmpty() &&
+                    profile.getSkills() != null && !profile.getSkills().trim().isEmpty()) {
+                    profileCompleted = true;
+                }
+            }
+        }
+
+        return new com.example.demo_prj_intern.dto.respone.CurrentUserResponse(
+                user.getId(),
+                user.getEmail(),
+                user.getRole(),
+                user.getStatus(),
+                profileCompleted
+        );
     }
 }

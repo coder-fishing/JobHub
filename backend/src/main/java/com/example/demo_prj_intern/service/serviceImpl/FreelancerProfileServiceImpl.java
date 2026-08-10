@@ -18,7 +18,7 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
     @Override
     public FreelancerProfileRespone getProfileByUserId(Long userId) {
         FreelancerProfileEntity profile = freelancerProfileRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy hồ sơ Freelancer cho userId: " + userId));
+                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.NOT_FOUND, "Không tìm thấy hồ sơ Freelancer cho userId: " + userId));
 
         return mapToResponse(profile);
     }
@@ -27,11 +27,26 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
     @Transactional
     public FreelancerProfileRespone updateProfile(Long userId, FreelancerRequest request) {
         FreelancerProfileEntity profile = freelancerProfileRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy hồ sơ Freelancer cho userId: " + userId));
+                .orElseGet(() -> {
+                    FreelancerProfileEntity newProfile = new FreelancerProfileEntity();
+                    // Lấy UserEntity thông qua reference để gán (vì service không có sẵn UserRepository)
+                    // Rất may là chỉ cần ID để tạo relationship proxy trong Hibernate.
+                    // Nhưng ở đây ta cần gán UserEntity thật hoặc tạo proxy.
+                    return newProfile;
+                });
+
+        if (profile.getUser() == null) {
+            // Khởi tạo relationship nếu đây là profile mới
+            com.example.demo_prj_intern.entity.UserEntity userRef = new com.example.demo_prj_intern.entity.UserEntity();
+            userRef.setId(userId);
+            profile.setUser(userRef);
+        }
 
         // Cập nhật thông tin từ Request DTO
         if (request.getFullName() != null && !request.getFullName().trim().isEmpty()) {
             profile.setFullName(request.getFullName().trim());
+        } else if (profile.getFullName() == null) {
+            profile.setFullName("Freelancer " + userId); // Default for NOT NULL constraint
         }
         if (request.getTitle() != null) profile.setTitle(request.getTitle());
         if (request.getBio() != null) profile.setBio(request.getBio());

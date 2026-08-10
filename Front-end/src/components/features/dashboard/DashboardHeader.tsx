@@ -30,28 +30,10 @@ export function DashboardHeader({
           </p>
         </div>
 
-        {/* Role Switcher Tab */}
-        <div className="bg-slate-100 p-1.5 rounded-2xl border border-slate-200/80 flex items-center space-x-1 text-xs font-semibold self-start md:self-auto">
-          <button
-            onClick={() => onRoleChange('client')}
-            className={`px-4 py-2.5 rounded-xl transition-all ${
-              role === 'client'
-                ? 'bg-white text-slate-900 shadow-xs font-bold'
-                : 'text-slate-500 hover:text-slate-900'
-            }`}
-          >
-            Góc Khách Hàng (Client)
-          </button>
-          <button
-            onClick={() => onRoleChange('freelancer')}
-            className={`px-4 py-2.5 rounded-xl transition-all ${
-              role === 'freelancer'
-                ? 'bg-white text-slate-900 shadow-xs font-bold'
-                : 'text-slate-500 hover:text-slate-900'
-            }`}
-          >
-            Góc Freelancer
-          </button>
+        {/* The Role Switcher Tab has been removed as role is now authenticated and fixed */}
+        <div className="bg-slate-100 p-1.5 rounded-2xl border border-slate-200/80 flex items-center space-x-2 text-xs font-semibold self-start md:self-auto px-4 py-2.5">
+          <span className="text-slate-500">Vai trò hiện tại:</span>
+          <span className="text-slate-900 font-bold uppercase">{role === 'client' ? 'Khách Hàng' : 'Freelancer'}</span>
         </div>
       </div>
 

@@ -16,17 +16,17 @@ import java.util.List;
 public class ProjectController {
 
     private final ProjectService projectService;
+    private final com.example.demo_prj_intern.service.AuthService authService;
 
     // 1. Tạo mới dự án
-    // URL: POST http://localhost:8080/api/project?clientId=1
+    // URL: POST http://localhost:8080/api/project
     @PostMapping
-    public ResponseEntity<ProjectResponse> createProject(
-            @RequestParam(value = "clientId", required = false) Long clientId,
-            @RequestBody CreateProjectRequest request) {
-        if (clientId == null) {
-            throw new IllegalArgumentException("Client ID là tham số bắt buộc trong URL (Ví dụ: ?clientId=1)");
+    public ResponseEntity<ProjectResponse> createProject(@RequestBody CreateProjectRequest request) {
+        com.example.demo_prj_intern.dto.respone.CurrentUserResponse currentUser = authService.getCurrentUser();
+        if (!"CLIENT".equals(currentUser.getRole())) {
+            throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.FORBIDDEN, "Chỉ CLIENT mới được tạo dự án");
         }
-        ProjectResponse response = projectService.createProject(clientId, request);
+        ProjectResponse response = projectService.createProject(currentUser.getId(), request);
         return ResponseEntity.ok(response);
     }
 
@@ -38,16 +38,17 @@ public class ProjectController {
         return ResponseEntity.ok(response);
     }
 
-    // 3. Lấy danh sách dự án (có thể lọc theo clientId hoặc trạng thái OPEN)
-    // URL Lấy tất cả: GET http://localhost:8080/api/project
-    // URL Lấy theo client: GET http://localhost:8080/api/project?clientId=1
-    // URL Lấy các dự án OPEN: GET http://localhost:8080/api/project?status=OPEN
+    // 3. Lấy danh sách dự án
     @GetMapping
     public ResponseEntity<List<ProjectResponse>> getProjects(
             @RequestParam(value = "clientId", required = false) Long clientId,
-            @RequestParam(value = "status", required = false) String status) {
+            @RequestParam(value = "status", required = false) String status,
+            @RequestParam(value = "myProjects", required = false, defaultValue = "false") boolean myProjects) {
         
-        if (clientId != null) {
+        if (myProjects) {
+            com.example.demo_prj_intern.dto.respone.CurrentUserResponse currentUser = authService.getCurrentUser();
+            return ResponseEntity.ok(projectService.getProjectsByClientId(currentUser.getId()));
+        } else if (clientId != null) {
             return ResponseEntity.ok(projectService.getProjectsByClientId(clientId));
         } else if ("OPEN".equalsIgnoreCase(status)) {
             return ResponseEntity.ok(projectService.getAllOpenProjects());
@@ -56,17 +57,17 @@ public class ProjectController {
         }
     }
 
-    // 4. Cập nhật thông tin dự án (Chỉnh sửa thông tin, gia hạn hạn chót, đổi trạng thái tuyển dụng, đóng/hủy dự án)
-    // URL: PUT http://localhost:8080/api/project/1?clientId=1
+    // 4. Cập nhật thông tin dự án
+    // URL: PUT http://localhost:8080/api/project/1
     @PutMapping("/{projectId}")
     public ResponseEntity<ProjectResponse> updateProject(
             @PathVariable("projectId") Long projectId,
-            @RequestParam(value = "clientId", required = false) Long clientId,
             @RequestBody UpdateProjectRequest request) {
-        if (clientId == null) {
-            throw new IllegalArgumentException("Client ID là tham số bắt buộc trong URL (Ví dụ: ?clientId=1)");
+        com.example.demo_prj_intern.dto.respone.CurrentUserResponse currentUser = authService.getCurrentUser();
+        if (!"CLIENT".equals(currentUser.getRole())) {
+            throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.FORBIDDEN, "Chỉ CLIENT mới được cập nhật dự án");
         }
-        ProjectResponse response = projectService.updateProject(clientId, projectId, request);
+        ProjectResponse response = projectService.updateProject(currentUser.getId(), projectId, request);
         return ResponseEntity.ok(response);
     }
 }

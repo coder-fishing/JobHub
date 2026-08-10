@@ -12,6 +12,33 @@ import {
 
 export default function CreateProjectPage() {
   const router = useRouter();
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+
+  // Auth Guard
+  require('react').useEffect(() => {
+    const checkAuth = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        router.push('/login');
+        return;
+      }
+      try {
+        const res = await fetch('http://localhost:8080/api/auth/me', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+        if (data.role !== 'CLIENT') {
+          router.push('/dashboard');
+        } else {
+          setIsCheckingAuth(false);
+        }
+      } catch {
+        router.push('/login');
+      }
+    };
+    checkAuth();
+  }, [router]);
 
   const [formData, setFormData] = useState<CreateProjectFormData>({
     title: '',
@@ -83,6 +110,14 @@ export default function CreateProjectPage() {
   const handleSkillsChange = (newSkills: string) => {
     setFormData((prev) => ({ ...prev, requiredSkills: newSkills }));
   };
+
+  if (isCheckingAuth) {
+    return (
+      <div className="bg-slate-50 min-h-screen py-10 flex items-center justify-center">
+        <div className="w-12 h-12 rounded-full border-4 border-emerald-200 border-t-emerald-600 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="bg-slate-50 min-h-screen py-10">

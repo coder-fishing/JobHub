@@ -12,17 +12,23 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource; // Dùng bản Servlet/MVC, KHÔNG dùng reactive
+import com.example.demo_prj_intern.security.OAuth2LoginSuccessHandler;
+import com.example.demo_prj_intern.security.OAuth2LoginFailureHandler;
+import lombok.RequiredArgsConstructor;
+
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import com.example.demo_prj_intern.security.JwtAuthenticationFilter;
 
 import java.util.List;
 
 @Configuration
 @EnableWebSecurity // BẮT BUỘC có annotation này để Spring Security nhận cấu hình
+@RequiredArgsConstructor
 public class SecurityConfig {
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+    private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -38,8 +44,19 @@ public class SecurityConfig {
 
                 // 4. Phân quyền Request
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/**", "/error").permitAll() // Cho phép truy cập tự do vào /api/auth/* và /error                     .anyRequest().authenticated()               // Các API còn lại bắt buộc đăng nhập
-                );
+                        .requestMatchers("/api/auth/**", "/error").permitAll() // Cho phép truy cập tự do vào /api/auth/* và /error
+                        .requestMatchers("/oauth2/**").permitAll() // Cho phép oauth2 flow
+                        .anyRequest().authenticated()               // Các API còn lại bắt buộc đăng nhập
+                )
+                
+                // 5. Cấu hình OAuth2 Login
+                .oauth2Login(oauth2 -> oauth2
+                        .successHandler(oAuth2LoginSuccessHandler)
+                        .failureHandler(oAuth2LoginFailureHandler)
+                )
+                
+                // 6. Thêm JWT Filter
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

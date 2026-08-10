@@ -78,11 +78,20 @@ export const freelancerService = {
   },
 
   /**
-   * Get current logged-in user profile (Mock profile)
+   * Get current logged-in user profile
    */
   async getCurrentProfile(): Promise<FreelancerProfileResponse> {
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    return MOCK_FREELANCERS_API[0];
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('Chưa đăng nhập');
+
+    const res = await fetch('http://localhost:8080/api/freelancer/profile/me', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    if (!res.ok) {
+      throw new Error('Lỗi khi tải hồ sơ');
+    }
+    return res.json();
   },
 
   /**
@@ -92,22 +101,22 @@ export const freelancerService = {
     id: number,
     payload: UpdateFreelancerProfilePayload
   ): Promise<FreelancerProfileResponse> {
-    await new Promise((resolve) => setTimeout(resolve, 800));
-    const targetIndex = MOCK_FREELANCERS_API.findIndex((f) => f.id === id);
-    
-    if (targetIndex !== -1) {
-      MOCK_FREELANCERS_API[targetIndex] = {
-        ...MOCK_FREELANCERS_API[targetIndex],
-        fullName: payload.fullName,
-        title: payload.title,
-        bio: payload.bio,
-        skills: payload.skills,
-        hourlyRate: payload.hourlyRate,
-      };
-      return MOCK_FREELANCERS_API[targetIndex];
-    }
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('Chưa đăng nhập');
 
-    throw new Error('Profile not found');
+    const res = await fetch('http://localhost:8080/api/freelancer/profile/me', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) {
+      throw new Error('Cập nhật hồ sơ thất bại');
+    }
+    return res.json();
   },
 };
 

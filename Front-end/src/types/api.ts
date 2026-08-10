@@ -16,7 +16,7 @@ export interface ProjectResponse {
 export interface FreelancerProfileResponse {
   id: number;
   userId: number;
-  userEmail: string;
+  email: string;
   fullName: string;
   title: string;
   bio: string;

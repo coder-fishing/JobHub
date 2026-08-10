@@ -21,8 +21,11 @@ export function useProjects(initialParams?: ProjectFilterParams) {
     initialParams?.sortBy || 'newest'
   );
 
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
   const fetchProjects = useCallback(async () => {
     setIsLoading(true);
+    setErrorMsg(null);
     try {
       const data = await projectService.getProjects({
         searchQuery,
@@ -32,13 +35,14 @@ export function useProjects(initialParams?: ProjectFilterParams) {
         sortBy,
       });
       setProjects(data);
+    } catch (err: any) {
+      setErrorMsg(err.message || 'Lỗi khi tải dự án');
     } finally {
       setIsLoading(false);
     }
   }, [searchQuery, selectedStatuses, selectedSkills, maxBudget, sortBy]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchProjects();
   }, [fetchProjects]);
 

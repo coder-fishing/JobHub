@@ -110,7 +110,7 @@ export default function ProfilePage() {
         <ProfileHeader
           fullName={profile.fullName}
           title={profile.title}
-          email={profile.userEmail}
+          email={profile.email}
         />
 
         {/* Profile Edit Form */}

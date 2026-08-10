@@ -1,12 +1,50 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Search, ChevronDown, Sparkles, Menu, X } from 'lucide-react';
 import { NAV_ITEMS } from '@/constants';
+import { usePathname, useRouter } from 'next/navigation';
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [authRole, setAuthRole] = useState<'CLIENT' | 'FREELANCER' | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setIsAuthenticated(false);
+        setAuthRole(null);
+        return;
+      }
+      try {
+        const res = await fetch('http://localhost:8080/api/auth/me', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setIsAuthenticated(true);
+          setAuthRole(data.role);
+        } else {
+          setIsAuthenticated(false);
+          setAuthRole(null);
+        }
+      } catch (e) {
+        console.error("Lỗi xác thực Navbar", e);
+      }
+    };
+    checkAuth();
+  }, [pathname]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user_role');
+    window.location.href = '/login';
+  };
 
   return (
     <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
@@ -76,36 +114,53 @@ export default function Navbar() {
             </div>
 
             <div className="flex items-center space-x-3">
-              <Link
-                href="/dashboard"
-                className="text-slate-700 hover:text-slate-900 font-medium text-sm px-4 py-2.5 rounded-full transition-colors hover:bg-slate-100"
-              >
-                Dashboard
-              </Link>
-              <Link
-                href="/profile"
-                className="text-slate-700 hover:text-slate-900 font-medium text-sm px-4 py-2.5 rounded-full transition-colors hover:bg-slate-100"
-              >
-                Hồ Sơ Cá Nhân
-              </Link>
-              <Link
-                href="/login"
-                className="text-slate-700 hover:text-slate-900 font-medium text-sm px-4 py-2.5 rounded-full transition-colors hover:bg-slate-100"
-              >
-                Đăng Nhập
-              </Link>
-              <Link
-                href="/register"
-                className="gradient-button text-white font-medium text-sm px-5 py-2.5 rounded-full shadow-md shadow-emerald-500/20"
-              >
-                Đăng Ký
-              </Link>
-              <Link
-                href="/jobs/create"
-                className="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-medium text-sm px-5 py-2.5 rounded-full border border-emerald-200 transition-all"
-              >
-                Đăng Dự Án
-              </Link>
+              {isAuthenticated ? (
+                <>
+                  <Link
+                    href="/dashboard"
+                    className="text-slate-700 hover:text-slate-900 font-medium text-sm px-4 py-2.5 rounded-full transition-colors hover:bg-slate-100"
+                  >
+                    Dashboard
+                  </Link>
+                  {authRole === 'FREELANCER' && (
+                    <Link
+                      href="/profile"
+                      className="text-slate-700 hover:text-slate-900 font-medium text-sm px-4 py-2.5 rounded-full transition-colors hover:bg-slate-100"
+                    >
+                      Hồ Sơ Cá Nhân
+                    </Link>
+                  )}
+                  {authRole === 'CLIENT' && (
+                    <Link
+                      href="/jobs/create"
+                      className="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-medium text-sm px-5 py-2.5 rounded-full border border-emerald-200 transition-all"
+                    >
+                      Đăng Dự Án
+                    </Link>
+                  )}
+                  <button
+                    onClick={handleLogout}
+                    className="text-red-600 hover:text-red-700 font-medium text-sm px-4 py-2.5 rounded-full transition-colors hover:bg-red-50"
+                  >
+                    Đăng Xuất
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/login"
+                    className="text-slate-700 hover:text-slate-900 font-medium text-sm px-4 py-2.5 rounded-full transition-colors hover:bg-slate-100"
+                  >
+                    Đăng Nhập
+                  </Link>
+                  <Link
+                    href="/register"
+                    className="gradient-button text-white font-medium text-sm px-5 py-2.5 rounded-full shadow-md shadow-emerald-500/20"
+                  >
+                    Đăng Ký
+                  </Link>
+                </>
+              )}
             </div>
           </div>
 

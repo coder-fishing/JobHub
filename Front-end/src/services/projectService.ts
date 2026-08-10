@@ -13,25 +13,45 @@ export interface ProjectFilterParams {
   skills?: string[];
   maxBudget?: number;
   sortBy?: 'newest' | 'budget_high' | 'budget_low';
+  myProjects?: boolean; // Added for Client dashboard
 }
 
 export interface CreateProjectPayload {
   title: string;
   description: string;
   budget: number;
-  requiredSkills: string;
+  requiredSkills: string; // Not stored in backend currently, but passed
   maxFreelancers: number;
   deadline: string;
 }
+
+const API_BASE = 'http://localhost:8080/api/project';
+
+const getAuthHeaders = () => {
+  const token = localStorage.getItem('token');
+  return {
+    'Content-Type': 'application/json',
+    ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+  };
+};
 
 export const projectService = {
   /**
    * Fetch and filter project list
    */
   async getProjects(params?: ProjectFilterParams): Promise<ProjectResponse[]> {
-    await new Promise((resolve) => setTimeout(resolve, 800));
+    let url = API_BASE;
     
-    let result = [...MOCK_PROJECTS_API];
+    if (params?.myProjects) {
+      url += '?myProjects=true';
+    } else if (params?.statuses?.includes('OPEN') && params.statuses.length === 1) {
+      url += '?status=OPEN';
+    }
+
+    const res = await fetch(url, { headers: getAuthHeaders() });
+    if (!res.ok) throw new Error('Không thể lấy danh sách dự án');
+    
+    let result: ProjectResponse[] = await res.json();
 
     if (!params) return result;
 
@@ -47,7 +67,7 @@ export const projectService = {
         return false;
       }
 
-      // Status Filter
+      // Status Filter (If we didn't use the simple OPEN query above)
       if (statuses && statuses.length > 0 && !statuses.includes(project.status)) {
         return false;
       }
@@ -55,15 +75,6 @@ export const projectService = {
       // Budget Filter
       if (maxBudget !== undefined && project.budget > maxBudget) {
         return false;
-      }
-
-      // Skills Filter
-      if (skills && skills.length > 0) {
-        const projectSkills = project.requiredSkills.split(',').map((s) => s.trim().toLowerCase());
-        const hasSkillMatch = skills.some((skill) =>
-          projectSkills.includes(skill.toLowerCase())
-        );
-        if (!hasSkillMatch) return false;
       }
 
       return true;
@@ -84,34 +95,29 @@ export const projectService = {
    * Fetch project detail by ID
    */
   async getProjectById(id: string | number): Promise<ProjectResponse | null> {
-    // Mô phỏng delay API fetch
-    await new Promise((resolve) => setTimeout(resolve, 800));
-    const found = MOCK_PROJECTS_API.find((p) => p.id === Number(id));
-    return found || null;
+    const res = await fetch(`${API_BASE}/${id}`, { headers: getAuthHeaders() });
+    if (!res.ok) {
+      if (res.status === 404) return null;
+      throw new Error('Không thể tải chi tiết dự án');
+    }
+    return res.json();
   },
 
   /**
    * Create a new project
    */
   async createProject(payload: CreateProjectPayload): Promise<ProjectResponse> {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    const newProject: ProjectResponse = {
-      id: Date.now(),
-      clientId: 101,
-      clientEmail: 'client.company@workhub.io',
-      title: payload.title,
-      description: payload.description,
-      budget: payload.budget,
-      requiredSkills: payload.requiredSkills,
-      maxFreelancers: payload.maxFreelancers,
-      status: 'OPEN',
-      deadline: payload.deadline,
-      createdAt: new Date().toISOString(),
-    };
+    const res = await fetch(API_BASE, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(payload)
+    });
     
-    // Thêm vào mock data local
-    MOCK_PROJECTS_API.unshift(newProject);
-    return newProject;
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || 'Lỗi khi tạo dự án');
+    }
+    return res.json();
   },
 
   /**

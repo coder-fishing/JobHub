@@ -46,4 +46,9 @@ public class AuthController {
         authService.logout(userId);
         return ResponseEntity.ok().build();
     }
+
+    @org.springframework.web.bind.annotation.GetMapping("/me")
+    public ResponseEntity<com.example.demo_prj_intern.dto.respone.CurrentUserResponse> getCurrentUser() {
+        return ResponseEntity.ok(authService.getCurrentUser());
+    }
 }
