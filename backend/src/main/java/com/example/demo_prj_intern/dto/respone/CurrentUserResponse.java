@@ -13,4 +13,7 @@ public class CurrentUserResponse {
     private String role;
     private String status;
     private boolean profileCompleted;
+    private String fullName;
+    private String avatarUrl;
 }
+

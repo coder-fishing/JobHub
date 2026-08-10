@@ -10,6 +10,11 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [authRole, setAuthRole] = useState<'CLIENT' | 'FREELANCER' | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userProfile, setUserProfile] = useState<{
+    email?: string;
+    fullName?: string;
+    avatarUrl?: string;
+  }>({});
   const router = useRouter();
   const pathname = usePathname();
 
@@ -19,6 +24,7 @@ export default function Navbar() {
       if (!token) {
         setIsAuthenticated(false);
         setAuthRole(null);
+        setUserProfile({});
         return;
       }
       try {
@@ -29,9 +35,19 @@ export default function Navbar() {
           const data = await res.json();
           setIsAuthenticated(true);
           setAuthRole(data.role);
+          setUserProfile({
+            email: data.email,
+            fullName: data.fullName || localStorage.getItem('user_fullname') || '',
+            avatarUrl: data.avatarUrl || localStorage.getItem('user_avatar') || ''
+          });
+
+          if (data.role) localStorage.setItem('user_role', data.role);
+          if (data.fullName) localStorage.setItem('user_fullname', data.fullName);
+          if (data.avatarUrl) localStorage.setItem('user_avatar', data.avatarUrl);
         } else {
           setIsAuthenticated(false);
           setAuthRole(null);
+          setUserProfile({});
         }
       } catch (e) {
         console.error("Lỗi xác thực Navbar", e);
@@ -43,7 +59,19 @@ export default function Navbar() {
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user_role');
+    localStorage.removeItem('user_fullname');
+    localStorage.removeItem('user_avatar');
     window.location.href = '/login';
+  };
+
+  const getInitial = () => {
+    if (userProfile.fullName && userProfile.fullName.trim()) {
+      return userProfile.fullName.trim().charAt(0).toUpperCase();
+    }
+    if (userProfile.email) {
+      return userProfile.email.charAt(0).toUpperCase();
+    }
+    return 'U';
   };
 
   return (
@@ -116,20 +144,13 @@ export default function Navbar() {
             <div className="flex items-center space-x-3">
               {isAuthenticated ? (
                 <>
-                  <Link
+                  {/* <Link
                     href="/dashboard"
                     className="text-slate-700 hover:text-slate-900 font-medium text-sm px-4 py-2.5 rounded-full transition-colors hover:bg-slate-100"
                   >
                     Dashboard
-                  </Link>
-                  {authRole === 'FREELANCER' && (
-                    <Link
-                      href="/profile"
-                      className="text-slate-700 hover:text-slate-900 font-medium text-sm px-4 py-2.5 rounded-full transition-colors hover:bg-slate-100"
-                    >
-                      Hồ Sơ Cá Nhân
-                    </Link>
-                  )}
+                  </Link> */}
+
                   {authRole === 'CLIENT' && (
                     <Link
                       href="/jobs/create"
@@ -138,12 +159,64 @@ export default function Navbar() {
                       Đăng Dự Án
                     </Link>
                   )}
-                  <button
-                    onClick={handleLogout}
-                    className="text-red-600 hover:text-red-700 font-medium text-sm px-4 py-2.5 rounded-full transition-colors hover:bg-red-50"
-                  >
-                    Đăng Xuất
-                  </button>
+
+                  {/* Profile & Avatar Menu Dropdown */}
+                  <div className="relative group pl-2">
+                    <button className="flex items-center space-x-3 p-1.5 rounded-full border border-slate-200 hover:border-emerald-500 transition-all bg-white shadow-xs">
+                      {userProfile.avatarUrl ? (
+                        <img
+                          src={userProfile.avatarUrl}
+                          alt="User Avatar"
+                          className="w-9 h-9 rounded-full object-cover border border-emerald-500"
+                        />
+                      ) : (
+                        <div className="w-9 h-9 rounded-full bg-emerald-600 text-white font-bold flex items-center justify-center text-sm shadow-inner">
+                          {getInitial()}
+                        </div>
+                      )}
+                      <div className="flex flex-col text-left pr-1">
+                        <span className="text-xs font-semibold text-slate-900 max-w-[100px] truncate">
+                          {userProfile.fullName || userProfile.email || 'Account'}
+                        </span>
+                        <span className="text-[10px] uppercase font-bold text-emerald-600 tracking-wider">
+                          {authRole}
+                        </span>
+                      </div>
+                      <ChevronDown className="w-4 h-4 text-slate-400 group-hover:rotate-180 transition-transform duration-200 pr-1" />
+                    </button>
+
+                    {/* Dropdown Menu */}
+                    <div className="absolute top-full right-0 w-60 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                      <div className="bg-white rounded-2xl p-2 shadow-2xl border border-slate-100 space-y-1">
+                        <div className="px-4 py-3 border-b border-slate-100">
+                          <p className="text-sm font-semibold text-slate-900 truncate">
+                            {userProfile.fullName || 'Người dùng WorkHub'}
+                          </p>
+                          <p className="text-xs text-slate-500 truncate">{userProfile.email}</p>
+                        </div>
+                        <Link
+                          href="/profile"
+                          className="block px-4 py-2.5 rounded-xl text-sm font-medium text-slate-700 hover:text-emerald-700 hover:bg-emerald-50 transition-colors"
+                        >
+                          Hồ sơ & Tài khoản
+                        </Link>
+                        <Link
+                          href="/dashboard"
+                          className="block px-4 py-2.5 rounded-xl text-sm font-medium text-slate-700 hover:text-emerald-700 hover:bg-emerald-50 transition-colors"
+                        >
+                          Bảng điều khiển (Dashboard)
+                        </Link>
+                        <div className="pt-1 border-t border-slate-100">
+                          <button
+                            onClick={handleLogout}
+                            className="w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
+                          >
+                            Đăng xuất
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </>
               ) : (
                 <>

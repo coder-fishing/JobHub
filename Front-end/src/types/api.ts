@@ -13,6 +13,16 @@ export interface ProjectResponse {
   createdAt: string;
 }
 
+export interface CurrentUserResponse {
+  id: number;
+  email: string;
+  role: 'CLIENT' | 'FREELANCER' | 'ADMIN' | 'ROLE_PENDING';
+  status: string;
+  profileCompleted: boolean;
+  fullName?: string;
+  avatarUrl?: string;
+}
+
 export interface FreelancerProfileResponse {
   id: number;
   userId: number;
@@ -23,6 +33,8 @@ export interface FreelancerProfileResponse {
   skills: string;
   hourlyRate: number;
   rating: number;
+  avatarUrl?: string;
+  portfolioUrl?: string;
 }
 
 export interface UpdateFreelancerProfilePayload {
@@ -31,6 +43,8 @@ export interface UpdateFreelancerProfilePayload {
   bio: string;
   skills: string;
   hourlyRate: number;
+  avatarUrl?: string;
+  portfolioUrl?: string;
 }
 
 export interface ProposalResponse {
