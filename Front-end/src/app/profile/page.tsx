@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { FreelancerProfileResponse } from '@/types/api';
+import { CurrentUserResponse, FreelancerProfileResponse } from '@/types/api';
 import { freelancerService } from '@/services/freelancerService';
 import {
   ProfileHeader,
@@ -10,7 +10,8 @@ import {
 } from '@/components/features/profile';
 
 export default function ProfilePage() {
-  const [profile, setProfile] = useState<FreelancerProfileResponse | null>(null);
+  const [currentUser, setCurrentUser] = useState<CurrentUserResponse | null>(null);
+  const [freelancerProfile, setFreelancerProfile] = useState<FreelancerProfileResponse | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -21,24 +22,86 @@ export default function ProfilePage() {
     title: '',
     bio: '',
     skills: '',
-    hourlyRate: '',
+    hourlyRate: '0',
+    avatarUrl: '',
   });
 
   useEffect(() => {
     let isMounted = true;
-    freelancerService.getCurrentProfile().then((data) => {
-      if (isMounted && data) {
-        setProfile(data);
-        setFormData({
-          fullName: data.fullName,
-          title: data.title,
-          bio: data.bio,
-          skills: data.skills,
-          hourlyRate: data.hourlyRate.toString(),
-        });
-        setIsLoading(false);
+
+    const loadProfileData = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        window.location.href = '/login';
+        return;
       }
-    });
+
+      try {
+        // Fetch current user
+        const meRes = await fetch('http://localhost:8080/api/auth/me', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (!meRes.ok) {
+          throw new Error('Lỗi xác thực thông tin người dùng.');
+        }
+
+        const meData: CurrentUserResponse = await meRes.json();
+        if (!isMounted) return;
+        setCurrentUser(meData);
+
+        // Populate baseline data from auth/me / localStorage
+        const storedFullName = meData.fullName || localStorage.getItem('user_fullname') || '';
+        const storedAvatar = meData.avatarUrl || localStorage.getItem('user_avatar') || '';
+
+        if (meData.role === 'FREELANCER') {
+          try {
+            const fProfile = await freelancerService.getCurrentProfile();
+            if (isMounted && fProfile) {
+              setFreelancerProfile(fProfile);
+              setFormData({
+                fullName: fProfile.fullName || storedFullName,
+                title: fProfile.title || '',
+                bio: fProfile.bio || '',
+                skills: fProfile.skills || '',
+                hourlyRate: fProfile.hourlyRate ? fProfile.hourlyRate.toString() : '0',
+                avatarUrl: fProfile.avatarUrl || storedAvatar,
+              });
+            }
+          } catch (e) {
+            // New Freelancer without profile yet
+            if (isMounted) {
+              setFormData({
+                fullName: storedFullName,
+                title: '',
+                bio: '',
+                skills: '',
+                hourlyRate: '0',
+                avatarUrl: storedAvatar,
+              });
+            }
+          }
+        } else {
+          // Client or other roles
+          if (isMounted) {
+            setFormData({
+              fullName: storedFullName || meData.email,
+              title: localStorage.getItem('client_company') || '',
+              bio: localStorage.getItem('client_bio') || '',
+              skills: '',
+              hourlyRate: '0',
+              avatarUrl: storedAvatar,
+            });
+          }
+        }
+      } catch (err: any) {
+        if (isMounted) setErrorMsg(err?.message || 'Không thể tải thông tin trang cá nhân.');
+      } finally {
+        if (isMounted) setIsLoading(false);
+      }
+    };
+
+    loadProfileData();
 
     return () => {
       isMounted = false;
@@ -57,30 +120,38 @@ export default function ProfilePage() {
     setErrorMsg(null);
     setSuccessMsg(null);
 
-    if (!formData.fullName.trim() || !formData.title.trim()) {
-      setErrorMsg('Vui lòng nhập đầy đủ Họ tên và Chức danh.');
+    if (!formData.fullName.trim()) {
+      setErrorMsg('Vui lòng nhập Họ và Tên.');
       return;
     }
-
-    if (Number(formData.hourlyRate) <= 0) {
-      setErrorMsg('Mức giá theo giờ phải lớn hơn 0 VNĐ.');
-      return;
-    }
-
-    if (!profile) return;
 
     try {
       setIsSubmitting(true);
-      const updated = await freelancerService.updateProfile(profile.id, {
-        fullName: formData.fullName.trim(),
-        title: formData.title.trim(),
-        bio: formData.bio.trim(),
-        skills: formData.skills.trim(),
-        hourlyRate: Number(formData.hourlyRate),
-      });
+      if (currentUser?.role === 'FREELANCER') {
+        const updated = await freelancerService.updateProfile(freelancerProfile?.id || 0, {
+          fullName: formData.fullName.trim(),
+          title: formData.title.trim(),
+          bio: formData.bio.trim(),
+          skills: formData.skills.trim(),
+          hourlyRate: Number(formData.hourlyRate) || 0,
+          avatarUrl: formData.avatarUrl?.trim() || '',
+        });
 
-      setProfile(updated);
+        setFreelancerProfile(updated);
+        if (updated.fullName) localStorage.setItem('user_fullname', updated.fullName);
+        if (updated.avatarUrl) localStorage.setItem('user_avatar', updated.avatarUrl);
+      } else {
+        // CLIENT Profile update mock/local handling
+        localStorage.setItem('user_fullname', formData.fullName.trim());
+        if (formData.avatarUrl) localStorage.setItem('user_avatar', formData.avatarUrl.trim());
+        if (formData.title) localStorage.setItem('client_company', formData.title.trim());
+        if (formData.bio) localStorage.setItem('client_bio', formData.bio.trim());
+      }
+
       setSuccessMsg('Cập nhật hồ sơ thành công!');
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (err: any) {
       setErrorMsg(err?.message || 'Có lỗi xảy ra khi cập nhật hồ sơ.');
     } finally {
@@ -101,16 +172,18 @@ export default function ProfilePage() {
     );
   }
 
-  if (!profile) return null;
+  const isClient = currentUser?.role === 'CLIENT';
 
   return (
     <div className="bg-slate-50 min-h-screen py-10">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
         {/* Profile Header */}
         <ProfileHeader
-          fullName={profile.fullName}
-          title={profile.title}
-          email={profile.email}
+          fullName={formData.fullName || currentUser?.email || 'User'}
+          title={formData.title || (isClient ? 'Khách hàng / Nhà tuyển dụng' : 'Freelancer')}
+          email={currentUser?.email || ''}
+          avatarUrl={formData.avatarUrl}
+          role={currentUser?.role}
         />
 
         {/* Profile Edit Form */}
@@ -122,6 +195,7 @@ export default function ProfilePage() {
           onChange={handleChange}
           onSkillsChange={handleSkillsChange}
           onSubmit={handleSubmit}
+          isClient={isClient}
         />
       </div>
     </div>
