@@ -130,8 +130,26 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public AuthResponse chooseRole(ChooseRoleRequest request) {
-        UserEntity user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
+        org.springframework.security.core.Authentication authentication = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
+            throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.UNAUTHORIZED, "Chưa đăng nhập");
+        }
+
+        String email = authentication.getName();
+        UserEntity user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.NOT_FOUND, "Không tìm thấy người dùng"));
+
+        if (!"ACTIVE".equalsIgnoreCase(user.getStatus())) {
+            throw new RuntimeException("Tài khoản chưa được kích hoạt");
+        }
+
+        if (user.getRole() != null && !user.getRole().trim().isEmpty()) {
+            throw new RuntimeException("Tài khoản đã được phân quyền");
+        }
+
+        if (!"CLIENT".equals(request.getRole()) && !"FREELANCER".equals(request.getRole())) {
+            throw new RuntimeException("Role không hợp lệ");
+        }
 
         user.setRole(request.getRole());
         userRepository.save(user);

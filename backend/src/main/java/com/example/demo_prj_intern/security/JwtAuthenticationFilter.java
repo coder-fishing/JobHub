@@ -38,6 +38,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 if (!userDetails.isAccountNonLocked()) {
                     throw new RuntimeException("Tài khoản của bạn đã bị khóa");
                 }
+                
+                if (!userDetails.isEnabled()) {
+                    throw new RuntimeException("Tài khoản của bạn chưa được kích hoạt");
+                }
 
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());

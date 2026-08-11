@@ -26,7 +26,7 @@ public class UserEntity {
     @Column(name = "password", nullable = false, length = 255)
     private String password;
 
-    @Column(name = "role", nullable = false, length = 20)
+    @Column(name = "role", nullable = true, length = 20)
     private String role; // 'ADMIN', 'CLIENT', 'FREELANCER', 'ROLE_PENDING'
 
     @Column(name = "status", length = 20)
