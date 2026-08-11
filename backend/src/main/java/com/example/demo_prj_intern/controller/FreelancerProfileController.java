@@ -36,6 +36,13 @@ public class FreelancerProfileController {
         return ResponseEntity.ok(freelancerProfileService.updateProfile(user.getId(), request));
     }
 
+    @GetMapping
+    public ResponseEntity<java.util.List<FreelancerProfileRespone>> getAllFreelancers(
+            @RequestParam(required = false) String search
+    ) {
+        return ResponseEntity.ok(freelancerProfileService.getAllFreelancers(search));
+    }
+
     @GetMapping("/{userId}")
     public ResponseEntity<FreelancerProfileRespone> getProfile(@PathVariable Long userId) {
         return ResponseEntity.ok(freelancerProfileService.getProfileByUserId(userId));
