@@ -44,21 +44,22 @@ public class AuthServiceImpl implements AuthService {
     public AuthResponse register(RegisterRequest registerRequest) {
         String normalizedEmail = registerRequest.getEmail().trim().toLowerCase();
         Optional<UserEntity> optUser = userRepository.findByEmail(normalizedEmail);
-        
+
         if (optUser.isPresent()) {
             UserEntity existingUser = optUser.get();
-            
+
             if (!"PENDING".equals(existingUser.getStatus()) || !"LOCAL".equals(existingUser.getAuthProvider())) {
                 throw new RuntimeException("Email đã tồn tại");
             }
-            
+
             // Nếu PENDING + LOCAL -> Không tạo mới, chỉ resend OTP
             String otp = otpService.resendRegisterOtp(existingUser.getEmail());
             emailService.sendRegistrationOtp(existingUser.getEmail(), otp);
-            
-            return new AuthResponse(existingUser.getId(), existingUser.getEmail(), existingUser.getRole(), existingUser.getStatus(), null);
+
+            return new AuthResponse(existingUser.getId(), existingUser.getEmail(), existingUser.getRole(),
+                    existingUser.getStatus(), null);
         }
-        
+
         UserEntity user = new UserEntity();
         user.setEmail(normalizedEmail);
 
@@ -145,16 +146,15 @@ public class AuthServiceImpl implements AuthService {
         Optional<UserEntity> optionalUser = userRepository.findByEmail(request.getEmail());
         UserEntity user;
 
-        if(optionalUser.isPresent()) {
+        if (optionalUser.isPresent()) {
             user = optionalUser.get();
             if ("BLOCKED".equalsIgnoreCase(user.getStatus())) {
                 throw new RuntimeException("Tài khoản của bạn đã bị khóa");
             }
-        }
-        else {
+        } else {
             user = new UserEntity();
             user.setEmail(request.getEmail());
-            user.setRole("CLIENT"); // Mặc định là CLIENT
+            user.setRole(null); // Để null để user chọn role sau
             user.setAuthProvider(request.getProvider());
             user.setPassword("");
             user.setStatus("ACTIVE");
@@ -175,14 +175,18 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public AuthResponse chooseRole(ChooseRoleRequest request) {
-        org.springframework.security.core.Authentication authentication = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
-            throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.UNAUTHORIZED, "Chưa đăng nhập");
+        org.springframework.security.core.Authentication authentication = org.springframework.security.core.context.SecurityContextHolder
+                .getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()
+                || "anonymousUser".equals(authentication.getPrincipal())) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.UNAUTHORIZED, "Chưa đăng nhập");
         }
 
         String email = authentication.getName();
         UserEntity user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.NOT_FOUND, "Không tìm thấy người dùng"));
+                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
+                        org.springframework.http.HttpStatus.NOT_FOUND, "Không tìm thấy người dùng"));
 
         if (!"ACTIVE".equalsIgnoreCase(user.getStatus())) {
             throw new RuntimeException("Tài khoản chưa được kích hoạt");
@@ -199,14 +203,14 @@ public class AuthServiceImpl implements AuthService {
         user.setRole(request.getRole());
         userRepository.save(user);
 
-        if("FREELANCER".equals(request.getRole())) {
+        if ("FREELANCER".equals(request.getRole())) {
             Optional<FreelancerProfileEntity> existingProfile = freelancerProfileRepository.findByUserId(user.getId());
             if (existingProfile.isEmpty()) {
                 FreelancerProfileEntity freelancerProfileEntity = new FreelancerProfileEntity();
                 freelancerProfileEntity.setUser(user);
                 freelancerProfileEntity.setFullName(request.getFullName() != null
                         ? request.getFullName()
-                        : "FreeLancer " + user.getId() );
+                        : "FreeLancer " + user.getId());
                 freelancerProfileRepository.save(freelancerProfileEntity);
             }
         }
@@ -217,19 +221,24 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void logout(Long userId) {
-        // Hiện tại chỉ dùng JWT stateless không có blacklist, logic logout sẽ được frontend clear token
+        // Hiện tại chỉ dùng JWT stateless không có blacklist, logic logout sẽ được
+        // frontend clear token
     }
 
     @Override
     public com.example.demo_prj_intern.dto.respone.CurrentUserResponse getCurrentUser() {
-        org.springframework.security.core.Authentication authentication = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
-            throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.UNAUTHORIZED, "Chưa đăng nhập");
+        org.springframework.security.core.Authentication authentication = org.springframework.security.core.context.SecurityContextHolder
+                .getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()
+                || "anonymousUser".equals(authentication.getPrincipal())) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.UNAUTHORIZED, "Chưa đăng nhập");
         }
 
         String email = authentication.getName();
         UserEntity user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.NOT_FOUND, "Không tìm thấy người dùng"));
+                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
+                        org.springframework.http.HttpStatus.NOT_FOUND, "Không tìm thấy người dùng"));
 
         boolean profileCompleted = true; // mặc định true cho CLIENT
         String fullName = null;
@@ -243,8 +252,8 @@ public class AuthServiceImpl implements AuthService {
                 fullName = profile.getFullName();
                 avatarUrl = profile.getAvatarUrl();
                 if (profile.getTitle() != null && !profile.getTitle().trim().isEmpty() &&
-                    profile.getBio() != null && !profile.getBio().trim().isEmpty() &&
-                    profile.getSkills() != null && !profile.getSkills().trim().isEmpty()) {
+                        profile.getBio() != null && !profile.getBio().trim().isEmpty() &&
+                        profile.getSkills() != null && !profile.getSkills().trim().isEmpty()) {
                     profileCompleted = true;
                 }
             }
@@ -264,7 +273,6 @@ public class AuthServiceImpl implements AuthService {
                 user.getStatus(),
                 profileCompleted,
                 fullName,
-                avatarUrl
-        );
+                avatarUrl);
     }
 }
