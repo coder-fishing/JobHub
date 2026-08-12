@@ -34,6 +34,8 @@ function RedirectContent() {
         })
         .then(meData => {
           localStorage.setItem('user_role', meData.role);
+          if (meData.fullName) localStorage.setItem('user_fullname', meData.fullName);
+          if (meData.avatarUrl) localStorage.setItem('user_avatar', meData.avatarUrl);
           
           if (meData.role === 'FREELANCER' && !meData.profileCompleted) {
             router.push('/profile/complete');

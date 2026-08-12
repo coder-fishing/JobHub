@@ -46,6 +46,8 @@ export default function LoginPage() {
         const meData = await meRes.json();
         
         localStorage.setItem('user_role', meData.role);
+        if (meData.fullName) localStorage.setItem('user_fullname', meData.fullName);
+        if (meData.avatarUrl) localStorage.setItem('user_avatar', meData.avatarUrl);
         
         // Redirect based on role and profile completion
         if (meData.role === 'FREELANCER' && !meData.profileCompleted) {

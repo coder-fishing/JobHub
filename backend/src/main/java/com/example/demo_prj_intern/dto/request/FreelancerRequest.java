@@ -12,5 +12,6 @@ public class FreelancerRequest {
     private String skills;
     private BigDecimal hourlyRate;
     private String portfolioUrl;
+    private String avatarUrl;
     private String clientId;
 }

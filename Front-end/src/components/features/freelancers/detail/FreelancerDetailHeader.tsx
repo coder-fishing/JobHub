@@ -34,7 +34,7 @@ export function FreelancerDetailHeader({
             <div className="flex items-center space-x-4 pt-1 text-xs text-slate-500">
               <div className="flex items-center space-x-1 text-amber-600 font-bold">
                 <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                <span>{freelancer.rating.toFixed(1)} / 5.0</span>
+                <span>{(freelancer.rating ?? 5.0).toFixed(1)} / 5.0</span>
               </div>
               <span>•</span>
               <span>ID: #{freelancer.userId}</span>

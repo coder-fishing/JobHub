@@ -23,7 +23,7 @@ export function FreelancerCard({ freelancer }: FreelancerCardProps) {
             <div>
               <div className="flex items-center space-x-1.5">
                 <h3 className="font-bold text-slate-900 text-base hover:text-emerald-600 transition-colors">
-                  <Link href={`/freelancers/${freelancer.id}`}>
+                  <Link href={`/freelancers/${freelancer.userId}`}>
                     {freelancer.fullName}
                   </Link>
                 </h3>
@@ -37,7 +37,7 @@ export function FreelancerCard({ freelancer }: FreelancerCardProps) {
 
           <div className="flex items-center space-x-1 bg-amber-50 border border-amber-200/60 px-2.5 py-1 rounded-full text-amber-700 text-xs font-semibold shrink-0">
             <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-            <span>{freelancer.rating.toFixed(1)}</span>
+            <span>{(freelancer.rating ?? 5.0).toFixed(1)}</span>
           </div>
         </div>
 
@@ -74,7 +74,7 @@ export function FreelancerCard({ freelancer }: FreelancerCardProps) {
         </div>
 
         <Link
-          href={`/freelancers/${freelancer.id}`}
+          href={`/freelancers/${freelancer.userId}`}
           className="inline-flex items-center space-x-1.5 bg-slate-900 hover:bg-emerald-600 text-white text-xs font-semibold px-4 py-2.5 rounded-xl transition-colors shadow-sm"
         >
           <span>Xem Hồ Sơ</span>

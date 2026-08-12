@@ -169,12 +169,16 @@ public class AuthServiceImpl implements AuthService {
                 .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.NOT_FOUND, "Không tìm thấy người dùng"));
 
         boolean profileCompleted = true; // mặc định true cho CLIENT
+        String fullName = null;
+        String avatarUrl = null;
 
         if ("FREELANCER".equals(user.getRole())) {
             profileCompleted = false;
             Optional<FreelancerProfileEntity> optionalProfile = freelancerProfileRepository.findByUserId(user.getId());
             if (optionalProfile.isPresent()) {
                 FreelancerProfileEntity profile = optionalProfile.get();
+                fullName = profile.getFullName();
+                avatarUrl = profile.getAvatarUrl();
                 if (profile.getTitle() != null && !profile.getTitle().trim().isEmpty() &&
                     profile.getBio() != null && !profile.getBio().trim().isEmpty() &&
                     profile.getSkills() != null && !profile.getSkills().trim().isEmpty()) {
@@ -188,7 +192,9 @@ public class AuthServiceImpl implements AuthService {
                 user.getEmail(),
                 user.getRole(),
                 user.getStatus(),
-                profileCompleted
+                profileCompleted,
+                fullName,
+                avatarUrl
         );
     }
 }

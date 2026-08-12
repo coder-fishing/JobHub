@@ -53,6 +53,7 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
         if (request.getSkills() != null) profile.setSkills(request.getSkills());
         if (request.getHourlyRate() != null) profile.setHourlyRate(request.getHourlyRate());
         if (request.getPortfolioUrl() != null) profile.setPortfolioUrl(request.getPortfolioUrl());
+        if (request.getAvatarUrl() != null) profile.setAvatarUrl(request.getAvatarUrl());
 
         // Lưu xuống Database
         FreelancerProfileEntity savedProfile = freelancerProfileRepository.save(profile);
@@ -76,7 +77,25 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
         response.setSkills(entity.getSkills());
         response.setHourlyRate(entity.getHourlyRate());
         response.setPortfolioUrl(entity.getPortfolioUrl());
+        response.setAvatarUrl(entity.getAvatarUrl());
 
         return response;
+    }
+
+    @Override
+    public java.util.List<FreelancerProfileRespone> getAllFreelancers(String search) {
+        java.util.List<FreelancerProfileEntity> list = freelancerProfileRepository.findAll();
+        return list.stream()
+                .filter(f -> f.getUser() != null && "FREELANCER".equals(f.getUser().getRole()) && "ACTIVE".equals(f.getUser().getStatus()))
+                .filter(f -> {
+                    if (search == null || search.trim().isEmpty()) return true;
+                    String s = search.toLowerCase();
+                    boolean nameMatch = f.getFullName() != null && f.getFullName().toLowerCase().contains(s);
+                    boolean titleMatch = f.getTitle() != null && f.getTitle().toLowerCase().contains(s);
+                    boolean skillsMatch = f.getSkills() != null && f.getSkills().toLowerCase().contains(s);
+                    return nameMatch || titleMatch || skillsMatch;
+                })
+                .map(this::mapToResponse)
+                .collect(java.util.stream.Collectors.toList());
     }
 }
