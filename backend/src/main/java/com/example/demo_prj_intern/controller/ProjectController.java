@@ -20,8 +20,14 @@ import com.example.demo_prj_intern.dto.request.CreateProjectRequest;
 import com.example.demo_prj_intern.dto.request.UpdateProjectRequest;
 import com.example.demo_prj_intern.dto.respone.ProjectResponse;
 import com.example.demo_prj_intern.service.ProjectService;
-
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/project")
@@ -85,4 +91,26 @@ public class ProjectController {
         ProjectResponse response = projectService.updateProject(currentUser.getId(), projectId, request);
         return ResponseEntity.ok(response);
     }
+
+
+    // 5. tìm kiếm thông tin theo danh mục, ngân sách
+  @GetMapping("/search")
+public ResponseEntity<Page<ProjectResponse>> searchProjects(
+        @RequestParam(required = false) String keyword,
+        @RequestParam(required = false) List<String> status,
+        @RequestParam(required = false) BigDecimal maxBudget,
+        @RequestParam(required = false) String skills,
+        @RequestParam(defaultValue = "newest") String sortBy,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "12") int size
+) {
+    String skill = (skills != null && !skills.isBlank())
+            ? skills.split(",")[0].trim()
+            : null;
+
+    Page<ProjectResponse> result = projectService.searchProjects(
+            keyword, status, maxBudget, skill, sortBy, page, size
+    );
+    return ResponseEntity.ok(result);
+}
 }

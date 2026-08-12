@@ -21,6 +21,12 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Collectors;
 
+// tìm  kiếm dự án bởi freelancer
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import java.math.BigDecimal;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -202,7 +208,39 @@ public class ProjectServiceImpl implements ProjectService {
         ProjectEntity savedProject = projectRepository.save(project);
         return mapToResponse(savedProject);
     }
+  @Override
+public Page<ProjectResponse> searchProjects(
+        String keyword,
+        List<String> statuses,
+        BigDecimal maxBudget,
+        String skill,
+        String sortBy,
+        int page,
+        int size
+) {
+    // Xử lý sắp xếp
+    Sort sort = switch (sortBy == null ? "newest" : sortBy.toLowerCase()) {
+        case "budget_high" -> Sort.by(Sort.Direction.DESC, "budget");
+        case "budget_low"  -> Sort.by(Sort.Direction.ASC, "budget");
+        default            -> Sort.by(Sort.Direction.DESC, "createdAt");
+    };
 
+    Pageable pageable = PageRequest.of(page, size, sort);
+
+    // Nếu statuses rỗng → null (không lọc status)
+    List<String> statusList = (statuses == null || statuses.isEmpty()) ? null : statuses;
+
+    // Gọi repository
+    Page<ProjectEntity> projectPage = projectRepository.searchProjects(
+            keyword,
+            statusList,
+            maxBudget,
+            skill,
+            pageable
+    );
+
+    return projectPage.map(this::mapToResponse);
+}
     // === HÀM CONVERT ENTITY -> RESPONSE DTO ===
     private ProjectResponse mapToResponse(ProjectEntity entity) {
         ProjectResponse response = new ProjectResponse();
@@ -224,4 +262,14 @@ public class ProjectServiceImpl implements ProjectService {
         response.setCreatedAt(entity.getCreatedAt());
         return response;
     }
+    // =================================================================
+    // ★ CHỨC NĂNG MỚI: TÌM KIẾM + LỌC DỰ ÁN (dùng cho trang /jobs)
+    // =================================================================
+    /**
+     * Tìm kiếm và lọc dự án theo keyword, status, budget, skill.
+     * Không thay đổi các method cũ.
+     */
+    
+
+    
 }

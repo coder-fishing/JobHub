@@ -9,4 +9,5 @@ public interface FreelancerProfileService {
 
     FreelancerProfileRespone updateProfile(Long userId, FreelancerRequest request);
 
+    java.util.List<FreelancerProfileRespone> getAllFreelancers(String search);
 }
