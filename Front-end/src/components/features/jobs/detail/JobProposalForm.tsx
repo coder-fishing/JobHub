@@ -5,21 +5,27 @@ import { Send, CheckCircle2 } from 'lucide-react';
 
 interface JobProposalFormProps {
   initialBid: string;
-  onSubmit: (proposal: { proposalBid: string; coverLetter: string }) => Promise<void> | void;
+  hasApplied: boolean;
+  onSubmit: (proposal: { proposalBid: string; estimatedDays: string; coverLetter: string }) => Promise<void>;
 }
 
-export function JobProposalForm({ initialBid, onSubmit }: JobProposalFormProps) {
+export function JobProposalForm({ initialBid, hasApplied, onSubmit }: JobProposalFormProps) {
   const [proposalBid, setProposalBid] = useState<string>(initialBid);
+  const [estimatedDays, setEstimatedDays] = useState<string>('');
   const [coverLetter, setCoverLetter] = useState<string>('');
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setError(null);
     try {
-      await onSubmit({ proposalBid, coverLetter });
+      await onSubmit({ proposalBid, estimatedDays, coverLetter });
       setIsSubmitted(true);
+    } catch (err: any) {
+      setError(err.message || 'Có lỗi xảy ra khi gửi đề xuất.');
     } finally {
       setIsSubmitting(false);
     }
@@ -32,7 +38,7 @@ export function JobProposalForm({ initialBid, onSubmit }: JobProposalFormProps) 
         <span>Gửi Báo Giá & Đề Xuất Chào Thầu</span>
       </h3>
 
-      {isSubmitted ? (
+      {(isSubmitted || hasApplied) ? (
         <div className="bg-emerald-50 border border-emerald-200 p-6 rounded-2xl text-center space-y-2">
           <CheckCircle2 className="w-10 h-10 text-emerald-600 mx-auto" />
           <h4 className="text-base font-bold text-emerald-900">
@@ -59,6 +65,20 @@ export function JobProposalForm({ initialBid, onSubmit }: JobProposalFormProps) 
 
           <div>
             <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
+              Thời gian hoàn thành ước tính (Ngày)
+            </label>
+            <input
+              type="number"
+              required
+              min="1"
+              value={estimatedDays}
+              onChange={(e) => setEstimatedDays(e.target.value)}
+              className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-sm font-semibold rounded-xl px-4 py-3 focus:outline-none focus:border-emerald-500"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
               Thư giới thiệu & Phương án triển khai (Cover Letter)
             </label>
             <textarea
@@ -70,6 +90,12 @@ export function JobProposalForm({ initialBid, onSubmit }: JobProposalFormProps) 
               className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl p-4 focus:outline-none focus:border-emerald-500"
             />
           </div>
+
+          {error && (
+            <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600">
+              {error}
+            </div>
+          )}
 
           <button
             type="submit"

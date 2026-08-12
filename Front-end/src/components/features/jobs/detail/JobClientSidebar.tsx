@@ -29,7 +29,7 @@ export function JobClientSidebar({ clientEmail, clientId }: JobClientSidebarProp
       <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs space-y-4">
         <h4 className="text-xs font-semibold text-slate-800 uppercase tracking-wider border-b border-slate-100 pb-3 flex items-center justify-between">
           <span>Thông Tin Khách Hàng</span>
-          <ShieldCheck className="w-4 h-4 text-emerald-600" title="Đã xác minh doanh nghiệp" />
+          <ShieldCheck className="w-4 h-4 text-emerald-600" aria-label="Đã xác minh doanh nghiệp" />
         </h4>
 
         <div className="flex items-center space-x-3.5">

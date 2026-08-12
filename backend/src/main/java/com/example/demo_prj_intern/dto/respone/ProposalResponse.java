@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 public class ProposalResponse {
     private Long id;
     private Long projectId;
+    private String projectTitle;
     private Long freelancerId;
     private String freelancerName;
     private BigDecimal proposedPrice;

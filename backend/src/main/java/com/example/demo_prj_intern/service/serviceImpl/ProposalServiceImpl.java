@@ -40,11 +40,14 @@ public class ProposalServiceImpl implements ProposalService {
         if (request.getFreelancerId() == null) {
             throw new IllegalArgumentException("Mã freelancer không được để trống");
         }
-//        if (request.getProposedPrice() == null || request.getProposedPrice().compareTo(java.math.BigDecimal.ZERO) <= 0) {
-//            throw new IllegalArgumentException("Giá đề xuất phải lớn hơn 0");
-//        }
+        if (request.getProposedPrice() == null || request.getProposedPrice().compareTo(java.math.BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Giá đề xuất phải lớn hơn 0");
+        }
         if (request.getEstimatedDays() == null || request.getEstimatedDays() <= 0) {
             throw new IllegalArgumentException("Thời gian hoàn thành ước lượng phải lớn hơn 0 ngày");
+        }
+        if (request.getCoverLetter() == null || request.getCoverLetter().trim().isEmpty()) {
+            throw new IllegalArgumentException("Thư giới thiệu không được để trống");
         }
 
         // Kiểm tra dự án tồn tại
@@ -52,9 +55,9 @@ public class ProposalServiceImpl implements ProposalService {
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy dự án với ID: " + request.getProjectId()));
 
         // Chỉ cho phép apply khi dự án ở trạng thái OPEN
-//        if (!"OPEN".equalsIgnoreCase(project.getStatus())) {
-//            throw new IllegalArgumentException("Dự án hiện tại không còn nhận hồ sơ ứng tuyển (Trạng thái: " + project.getStatus() + ")");
-//        }
+        if (!"OPEN".equalsIgnoreCase(project.getStatus())) {
+            throw new IllegalArgumentException("Dự án hiện tại không còn nhận hồ sơ ứng tuyển (Trạng thái: " + project.getStatus() + ")");
+        }
 
         // Kiểm tra freelancer tồn tại
         UserEntity freelancer = userRepository.findById(request.getFreelancerId())
@@ -83,8 +86,12 @@ public class ProposalServiceImpl implements ProposalService {
         proposal.setCoverLetter(request.getCoverLetter() != null ? request.getCoverLetter().trim() : null);
         proposal.setStatus("PENDING"); // Trạng thái mặc định
 
-        ProposalEntity savedProposal = proposalRepository.save(proposal);
-        return mapToResponse(savedProposal);
+        try {
+            ProposalEntity savedProposal = proposalRepository.saveAndFlush(proposal);
+            return mapToResponse(savedProposal);
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            throw new IllegalArgumentException("Bạn đã gửi hồ sơ ứng tuyển cho dự án này rồi!");
+        }
     }
 
     @Override
@@ -221,6 +228,7 @@ public class ProposalServiceImpl implements ProposalService {
         response.setId(entity.getId());
         if (entity.getProject() != null) {
             response.setProjectId(entity.getProject().getId());
+            response.setProjectTitle(entity.getProject().getTitle());
         }
         if (entity.getFreelancer() != null) {
             response.setFreelancerId(entity.getFreelancer().getId());

@@ -27,7 +27,7 @@ export function ClientProfileHeader({ client }: ClientProfileHeaderProps) {
             <h1 className="text-2xl font-extrabold text-slate-900">
               {client.companyName || client.email}
             </h1>
-            <ShieldCheck className="w-5 h-5 text-emerald-600" title="Doanh nghiệp đã xác minh" />
+            <ShieldCheck className="w-5 h-5 text-emerald-600" aria-label="Doanh nghiệp đã xác minh" />
           </div>
 
           <div className="flex flex-wrap items-center gap-y-1 gap-x-4 text-xs text-slate-500">

@@ -8,8 +8,8 @@ export const MOCK_PROPOSALS_API: ProposalResponse[] = [
     projectTitle: 'Xây dựng Website E-commerce sử dụng Next.js & TailwindCSS',
     freelancerId: 1,
     freelancerName: 'Nguyễn Văn Minh',
-    freelancerEmail: 'minh.nguyen@workhub.io',
-    proposalBid: 24000000,
+    estimatedDays: 14,
+    proposedPrice: 24000000,
     coverLetter: 'Chào anh/chị, tôi có 6 năm kinh nghiệm với Next.js & React. Tôi từng làm nhiều trang E-commerce tối ưu SEO tốt. Rất mong được hợp tác!',
     status: 'PENDING',
     createdAt: '2026-08-05T09:30:00',
@@ -20,8 +20,8 @@ export const MOCK_PROPOSALS_API: ProposalResponse[] = [
     projectTitle: 'Xây dựng Website E-commerce sử dụng Next.js & TailwindCSS',
     freelancerId: 2,
     freelancerName: 'Trần Thị Thu Hà',
-    freelancerEmail: 'ha.tran@workhub.io',
-    proposalBid: 25000000,
+    estimatedDays: 14,
+    proposedPrice: 25000000,
     coverLetter: 'Tôi có thể hỗ trợ cả phần thiết kế UI/UX lẫn cắt HTML/CSS responsive chuẩn đẹp bằng Next.js.',
     status: 'PENDING',
     createdAt: '2026-08-05T11:15:00',
@@ -32,8 +32,8 @@ export const MOCK_PROPOSALS_API: ProposalResponse[] = [
     projectTitle: 'Thiết kế UI/UX App Mobile Quản lý Tài chính Cá nhân',
     freelancerId: 2,
     freelancerName: 'Trần Thị Thu Hà',
-    freelancerEmail: 'ha.tran@workhub.io',
-    proposalBid: 17500000,
+    estimatedDays: 14,
+    proposedPrice: 17500000,
     coverLetter: 'Đã hoàn thành 50+ app mobile UI/UX trên Figma. Tôi sẽ bàn giao đầy đủ Design System & Prototype.',
     status: 'ACCEPTED',
     createdAt: '2026-08-04T14:00:00',
@@ -44,8 +44,8 @@ export const MOCK_PROPOSALS_API: ProposalResponse[] = [
     projectTitle: 'Lập trình Backend Spring Boot cho Hệ thống Đặt vé',
     freelancerId: 3,
     freelancerName: 'Lê Hoàng Nam',
-    freelancerEmail: 'nam.le@workhub.io',
-    proposalBid: 4500000,
+    estimatedDays: 14,
+    proposedPrice: 4500000,
     coverLetter: 'Chuyên gia Spring Boot & PostgreSQL. Cam kết bàn giao API có mã hóa JWT và test cẩn thận.',
     status: 'PENDING',
     createdAt: '2026-08-04T16:20:00',
@@ -61,13 +61,22 @@ export const proposalService = {
     return MOCK_PROPOSALS_API;
   },
 
-  /**
-   * Fetch proposals sent by freelancer
-   */
   async getFreelancerProposals(): Promise<ProposalResponse[]> {
-    await new Promise((resolve) => setTimeout(resolve, 600));
-    // Giả lập proposals của Freelancer ID = 1 (Nguyễn Văn Minh)
-    return MOCK_PROPOSALS_API.filter((p) => p.freelancerId === 1);
+    const token = localStorage.getItem('token');
+    const res = await fetch('http://localhost:8080/api/proposal/freelancer/me', {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+      },
+    });
+    
+    if (!res.ok) {
+      if (res.status === 401 || res.status === 403) {
+        return []; // If not authenticated or not freelancer, return empty array instead of throwing to prevent crashing the page
+      }
+      throw new Error('Lỗi khi lấy danh sách ứng tuyển');
+    }
+    return res.json();
   },
 
   /**

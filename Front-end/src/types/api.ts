@@ -27,7 +27,7 @@ export interface CurrentUserResponse {
 export interface FreelancerProfileResponse {
   id: number;
   userId: number;
-  email: string;
+  email?: string;
   fullName: string;
   title: string;
   bio: string;
@@ -51,13 +51,13 @@ export interface UpdateFreelancerProfilePayload {
 export interface ProposalResponse {
   id: number;
   projectId: number;
-  projectTitle: string;
+  projectTitle?: string;
   freelancerId: number;
   freelancerName: string;
-  freelancerEmail: string;
-  proposalBid: number;
+  proposedPrice: number;
+  estimatedDays: number;
   coverLetter: string;
-  status: 'PENDING' | 'ACCEPTED' | 'REJECTED';
+  status: 'PENDING' | 'ACCEPTED' | 'REJECTED' | string;
   createdAt: string;
 }
 

@@ -27,7 +27,7 @@ export function ProfileHeader({ fullName, title, email, avatarUrl, role }: Profi
       <div className="space-y-1 text-center sm:text-left flex-1">
         <div className="flex items-center justify-center sm:justify-start space-x-2">
           <h1 className="text-2xl font-extrabold text-slate-900">{fullName}</h1>
-          <ShieldCheck className="w-5 h-5 text-emerald-600" title="Đã xác minh" />
+          <ShieldCheck className="w-5 h-5 text-emerald-600" aria-label="Đã xác minh" />
           {role && (
             <span className="text-[10px] uppercase bg-emerald-100 text-emerald-800 font-bold px-2.5 py-0.5 rounded-full ml-2">
               {role}

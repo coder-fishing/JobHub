@@ -90,7 +90,7 @@ export function ClientDashboardView({
                       {proposal.freelancerName}
                     </h5>
                     <span className="text-xs text-slate-400 font-mono">
-                      {proposal.freelancerEmail}
+                      <span className="text-[11px] text-slate-500">ID: {proposal.freelancerId}</span>
                     </span>
                   </div>
                 </div>
@@ -98,7 +98,7 @@ export function ClientDashboardView({
                 <div className="text-right">
                   <span className="text-[11px] text-slate-400 block">Giá chào thầu</span>
                   <span className="text-base font-extrabold text-emerald-600">
-                    {proposal.proposalBid.toLocaleString('vi-VN')} VNĐ
+                    {proposal.proposedPrice?.toLocaleString('vi-VN')} VNĐ
                   </span>
                 </div>
               </div>
