@@ -5,6 +5,7 @@ import com.example.demo_prj_intern.dto.request.UpdateProjectRequest;
 import com.example.demo_prj_intern.dto.respone.ProjectResponse;
 import com.example.demo_prj_intern.entity.ProjectEntity;
 import com.example.demo_prj_intern.entity.UserEntity;
+import com.example.demo_prj_intern.service.CloudinaryUploadService;
 import com.example.demo_prj_intern.repository.ProjectRepository;
 import com.example.demo_prj_intern.repository.UserRepository;
 import com.example.demo_prj_intern.service.ProjectService;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -26,10 +28,11 @@ public class ProjectServiceImpl implements ProjectService {
 
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
+    private final CloudinaryUploadService cloudinaryUploadService;
 
     @Override
     @Transactional
-    public ProjectResponse createProject(Long clientId, CreateProjectRequest request) {
+    public ProjectResponse createProject(Long clientId, CreateProjectRequest request, MultipartFile attachment) {
         if (clientId == null) {
             throw new IllegalArgumentException("Client ID must not be null");
         }
@@ -68,6 +71,13 @@ public class ProjectServiceImpl implements ProjectService {
         project.setClient(client);
         project.setTitle(request.getTitle().trim());
         project.setDescription(request.getDescription().trim());
+        String requiredSkills = request.getRequiredSkills();
+        if (requiredSkills == null || requiredSkills.trim().isEmpty()) {
+            requiredSkills = request.getRequirements();
+        }
+        if (requiredSkills != null && !requiredSkills.trim().isEmpty()) {
+            project.setRequiredSkills(requiredSkills.trim());
+        }
         project.setBudget(request.getBudget());
         project.setDeadline(LocalDateTime.from(request.getDeadline().atStartOfDay(ZoneId.systemDefault())));
         if (request.getMaxFreelancers() != null && request.getMaxFreelancers() > 0) {
@@ -79,6 +89,14 @@ public class ProjectServiceImpl implements ProjectService {
 
         // Lưu xuống database
         ProjectEntity savedProject = projectRepository.save(project);
+
+        if (attachment != null && !attachment.isEmpty()) {
+            // TODO: upload file lên Cloudinary ở đây. Service này sẽ dùng cloudinary.cloud-name/api-key/api-secret trong application.properties.
+            String attachmentUrl = cloudinaryUploadService.uploadAttachment(attachment);
+            savedProject.setAttachmentUrl(attachmentUrl);
+            savedProject = projectRepository.save(savedProject);
+        }
+
         return mapToResponse(savedProject);
     }
 
@@ -196,9 +214,9 @@ public class ProjectServiceImpl implements ProjectService {
         response.setTitle(entity.getTitle());
         response.setDescription(entity.getDescription());
         response.setBudget(entity.getBudget());
-        // ProjectEntity không có trường requirements/requiredSkills, do đó đặt mặc định là null hoặc từ request nếu cần (nhưng mapToResponse chỉ có entity)
-        response.setRequiredSkills(null);
-        response.setMaxFreelancers(entity.getMaxFreelancers() != null ? entity.getMaxFreelancers() : 1);
+        response.setRequiredSkills(entity.getRequiredSkills());
+        response.setAttachmentUrl(entity.getAttachmentUrl());
+        response.setMaxFreelancers(entity.getMaxFreelancers() != null ? entity.getMaxFreelancers() : Integer.valueOf(1));
         response.setStatus(entity.getStatus());
         if (entity.getDeadline() != null) {
             response.setDeadline(entity.getDeadline().toLocalDate());

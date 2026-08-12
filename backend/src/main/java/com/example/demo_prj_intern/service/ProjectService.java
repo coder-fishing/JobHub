@@ -3,11 +3,12 @@ package com.example.demo_prj_intern.service;
 import com.example.demo_prj_intern.dto.request.CreateProjectRequest;
 import com.example.demo_prj_intern.dto.request.UpdateProjectRequest;
 import com.example.demo_prj_intern.dto.respone.ProjectResponse;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 public interface ProjectService {
-    ProjectResponse createProject(Long clientId, CreateProjectRequest request);
+    ProjectResponse createProject(Long clientId, CreateProjectRequest request, MultipartFile attachment);
 
     ProjectResponse getProjectById(Long projectId);
 

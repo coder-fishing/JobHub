@@ -11,6 +11,7 @@ public class CreateProjectRequest {
     private String title;
     private String description;
     private BigDecimal budget;
+    private String requiredSkills;
     private String requirements;
     private LocalDate deadline;
     private Integer maxFreelancers;
