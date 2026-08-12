@@ -10,9 +10,22 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [authRole, setAuthRole] = useState<'CLIENT' | 'FREELANCER' | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+// 🟢 THÊM DÒNG NÀY: State lưu chữ người dùng gõ trên Navbar
+  const [navSearchTerm, setNavSearchTerm] = useState('');
+
   const router = useRouter();
   const pathname = usePathname();
 
+// 🟢 THÊM HÀM NÀY: Xử lý khi nhấn Enter trên ô tìm kiếm Navbar
+  const handleNavSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (navSearchTerm.trim()) {
+      router.push(`/jobs?skills=${encodeURIComponent(navSearchTerm.trim())}`);
+      setNavSearchTerm(''); // Reset ô nhập sau khi tìm
+    } else {
+      router.push('/jobs');
+    }
+  };
   useEffect(() => {
     const checkAuth = async () => {
       const token = localStorage.getItem('token');
@@ -104,14 +117,26 @@ export default function Navbar() {
 
           {/* Search & Actions */}
           <div className="hidden lg:flex items-center space-x-6">
-            <div className="relative">
+            {/* <div className="relative">
               <input
                 type="text"
                 placeholder="Tìm dự án, kỹ năng..."
                 className="w-64 bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-full pl-10 pr-4 py-2.5 focus:outline-none focus:border-emerald-500 focus:bg-white focus:ring-2 focus:ring-emerald-500/10 transition-all placeholder:text-slate-400"
               />
               <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-            </div>
+            </div> */}
+
+            {/* 🟢 [SỬA]: Bọc input bằng form và gắn onSubmit={handleNavSearch} */}
+            <form onSubmit={handleNavSearch} className="relative">
+              <input
+                type="text"
+                placeholder="Tìm dự án, kỹ năng..."
+                value={navSearchTerm} // 🟢 Gán value
+                onChange={(e) => setNavSearchTerm(e.target.value)} // 🟢 Bắt sự kiện gõ phím
+                className="w-64 bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-full pl-10 pr-4 py-2.5 focus:outline-none focus:border-emerald-500 focus:bg-white focus:ring-2 focus:ring-emerald-500/10 transition-all placeholder:text-slate-400"
+              />
+              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            </form>
 
             <div className="flex items-center space-x-3">
               {isAuthenticated ? (
@@ -179,11 +204,21 @@ export default function Navbar() {
       {/* Mobile Drawer Navigation */}
       {isMobileMenuOpen && (
         <div className="lg:hidden bg-white border-b border-slate-200 px-4 pt-4 pb-6 space-y-4 shadow-lg">
-          <input
+          {/* <input
             type="text"
             placeholder="Tìm kiếm dự án..."
             className="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-emerald-500"
-          />
+          /> */}
+          {/* 🟢 [SỬA]: Bọc input mobile bằng form */}
+          <form onSubmit={(e) => { handleNavSearch(e); setIsMobileMenuOpen(false); }}>
+            <input
+              type="text"
+              placeholder="Tìm kiếm dự án..."
+              value={navSearchTerm}
+              onChange={(e) => setNavSearchTerm(e.target.value)}
+              className="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-emerald-500"
+            />
+          </form>
           <div className="space-y-2">
             {NAV_ITEMS.map((item, i) => (
               <Link 

@@ -77,6 +77,24 @@ export const projectService = {
         return false;
       }
 
+      // ==================== THÊM ĐOẠN NÀY ====================
+      // Skills Filter
+      if (skills && skills.length > 0) {
+        const projectSkills = project.requiredSkills
+          ? project.requiredSkills.split(',').map((s) => s.trim().toLowerCase())
+          : [];
+
+        // OR logic: project có ít nhất 1 skill trong danh sách đã chọn
+        const hasMatchingSkill = skills.some((skill) =>
+          projectSkills.includes(skill.toLowerCase())
+        );
+
+        if (!hasMatchingSkill) {
+          return false;
+        }
+      }
+      // ======================================================
+
       return true;
     });
 
@@ -133,5 +151,3 @@ export const projectService = {
     return { success: true };
   },
 };
-
-

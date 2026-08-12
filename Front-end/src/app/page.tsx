@@ -1,3 +1,8 @@
+'use client';
+import { useState } from 'react'; // 👈 [SỬA 2]: Import useState
+import { useRouter } from 'next/navigation'; // 👈 [SỬA 3]: Import useRouter
+
+
 import Link from 'next/link';
 import { CategoryCard } from '@/components/features/home/CategoryCard';
 import { JobCard } from '@/components/features/jobs/JobCard';
@@ -20,6 +25,20 @@ import {
 } from 'lucide-react';
 
 export default function Home() {
+
+/// 👇 [THÊM MỚI]: Bổ sung 3 dòng này vào ngay đầu hàm Home()
+  const router = useRouter();
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchTerm.trim()) {
+      router.push(`/jobs?skills=${encodeURIComponent(searchTerm.trim())}`);
+    } else {
+      router.push('/jobs');
+    }
+  };
+///
   return (
     <div className="min-h-screen flex flex-col bg-slate-50">
 
@@ -46,7 +65,7 @@ export default function Home() {
             </p>
 
             {/* Search Box */}
-            <div className="pt-4 max-w-2xl mx-auto">
+            {/* <div className="pt-4 max-w-2xl mx-auto">
               <div className="bg-white p-2 rounded-2xl sm:rounded-full border border-slate-200 shadow-xl flex flex-col sm:flex-row items-center gap-2">
                 <div className="relative flex-1 w-full pl-3 flex items-center">
                   <Search className="w-5 h-5 text-slate-400 shrink-0" />
@@ -63,12 +82,54 @@ export default function Home() {
               </div>
 
               {/* Popular Tags */}
-              <div className="flex flex-wrap items-center justify-center gap-2 mt-4 text-xs text-slate-600">
+              {/* <div className="flex flex-wrap items-center justify-center gap-2 mt-4 text-xs text-slate-600">
                 <span className="text-slate-400 font-medium">Gợi ý từ khóa:</span>
                 {POPULAR_SEARCH_TAGS.map((tag) => (
                   <Link 
                     key={tag} 
                     href={`/jobs?q=${tag}`} 
+                    className="px-3 py-1 rounded-full bg-white border border-slate-200 text-slate-600 hover:border-emerald-500 hover:text-emerald-600 transition-colors shadow-2xs"
+                  >
+                    {tag}
+                  </Link>
+                ))}
+              </div>
+            </div> */} 
+            {/* Search Box */}
+            <div className="pt-4 max-w-2xl mx-auto">
+              
+              {/* 👈 [SỬA]: Bọc div cũ bằng thẻ <form> và gắn onSubmit={handleSearch} */}
+              <form onSubmit={handleSearch} className="bg-white p-2 rounded-2xl sm:rounded-full border border-slate-200 shadow-xl flex flex-col sm:flex-row items-center gap-2">
+                <div className="relative flex-1 w-full pl-3 flex items-center">
+                  <Search className="w-5 h-5 text-slate-400 shrink-0" />
+                  
+                  {/* 👈 [SỬA]: Thêm value và onChange vào ô input */}
+                  <input
+                    type="text"
+                    placeholder="Bạn cần làm gì? (vd: Next.js, Figma, Logo, Website...)"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full bg-transparent text-slate-800 placeholder-slate-400 px-3 py-3 text-sm focus:outline-none"
+                  />
+                </div>
+                
+                {/* 👈 [SỬA]: Thêm type="submit" cho button */}
+                <button 
+                  type="submit" 
+                  className="w-full sm:w-auto gradient-button text-white font-semibold text-sm px-8 py-3.5 rounded-xl sm:rounded-full flex items-center justify-center space-x-2 shrink-0 shadow-md cursor-pointer"
+                >
+                  <span>Tìm Việc Ngay</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </form>
+
+              {/* Popular Tags */}
+              <div className="flex flex-wrap items-center justify-center gap-2 mt-4 text-xs text-slate-600">
+                <span className="text-slate-400 font-medium">Gợi ý từ khóa:</span>
+                {POPULAR_SEARCH_TAGS.map((tag) => (
+                  <Link 
+                    key={tag} 
+                    href={`/jobs?skills=${encodeURIComponent(tag)}`} 
                     className="px-3 py-1 rounded-full bg-white border border-slate-200 text-slate-600 hover:border-emerald-500 hover:text-emerald-600 transition-colors shadow-2xs"
                   >
                     {tag}

@@ -7,15 +7,21 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(
-        name = "projects",
-        indexes = {
-            @Index(name = "idx_project_title", columnList = "title"), // Tối ưu tìm kiếm theo Tiêu đề
-            @Index(name = "idx_project_status_created", columnList = "status, created_at") // Tối ưu lọc việc đang tuyển và sắp xếp mới nhất
-    })
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
-
+    name = "projects",
+    indexes = {
+        @Index(name = "idx_project_title", columnList = "title"),
+        @Index(name = "idx_project_status_created", columnList = "status, created_at"),
+        @Index(name = "idx_project_budget", columnList = "budget"),           // Thêm để lọc ngân sách nhanh
+        @Index(name = "idx_project_skills", columnList = "required_skills")  // Thêm để lọc kỹ năng
+    }
+)
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ProjectEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -33,6 +39,10 @@ public class ProjectEntity {
     @Column(name = "budget", nullable = false, precision = 12, scale = 2)
     private BigDecimal budget;
 
+    // === THÊM FIELD NÀY (rất quan trọng để lọc kỹ năng) ===
+    @Column(name = "required_skills", length = 500)
+    private String requiredSkills;   // Ví dụ: "Next.js,React,Spring Boot,TypeScript"
+
     @Column(name = "deadline", nullable = false)
     private LocalDateTime deadline;
 
@@ -43,14 +53,28 @@ public class ProjectEntity {
     private Integer maxFreelancers = 1;
 
     @Column(name = "status", length = 20)
-    private String status = "OPEN"; // 'OPEN', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'
+    private String status = "OPEN"; // OPEN | IN_PROGRESS | COMPLETED | CANCELLED
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+        if (status == null) {
+            status = "OPEN";
+        }
+        if (maxFreelancers == null) {
+            maxFreelancers = 1;
+        }
     }
-    
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 }
