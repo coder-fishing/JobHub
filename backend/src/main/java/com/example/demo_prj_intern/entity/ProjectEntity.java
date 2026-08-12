@@ -36,6 +36,9 @@ public class ProjectEntity {
     @Column(name = "description", nullable = false, columnDefinition = "TEXT")
     private String description;
 
+    @Column(name = "required_skills", columnDefinition = "TEXT")
+    private String requiredSkills;
+
     @Column(name = "budget", nullable = false, precision = 12, scale = 2)
     private BigDecimal budget;
 
@@ -46,7 +49,7 @@ public class ProjectEntity {
     @Column(name = "deadline", nullable = false)
     private LocalDateTime deadline;
 
-    @Column(name = "attachment_url", length = 255)
+    @Column(name = "attachment_url", columnDefinition = "TEXT")
     private String attachmentUrl;
 
     @Column(name = "max_freelancers")

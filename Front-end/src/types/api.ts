@@ -7,6 +7,7 @@ export interface ProjectResponse {
   description: string;
   budget: number;
   requiredSkills: string; // "Java, Spring Boot, React"
+  attachmentUrl?: string;
   maxFreelancers: number;
   status: 'OPEN' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
   deadline: string; // ISO Date String "YYYY-MM-DD"

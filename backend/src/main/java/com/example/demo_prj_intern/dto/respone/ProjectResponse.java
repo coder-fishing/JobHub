@@ -18,6 +18,7 @@ public class ProjectResponse {
     private String description;
     private BigDecimal budget;
     private String requiredSkills;
+    private String attachmentUrl;
     private Integer maxFreelancers;
     private String status;           // OPEN, IN_PROGRESS, COMPLETED, CANCELLED
     private LocalDate deadline;

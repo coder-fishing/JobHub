@@ -1,5 +1,21 @@
 package com.example.demo_prj_intern.controller;
 
+import java.util.List;
+
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.example.demo_prj_intern.dto.request.CreateProjectRequest;
 import com.example.demo_prj_intern.dto.request.UpdateProjectRequest;
 import com.example.demo_prj_intern.dto.respone.ProjectResponse;
@@ -23,13 +39,15 @@ public class ProjectController {
 
     // 1. Tạo mới dự án
     // URL: POST http://localhost:8080/api/project
-    @PostMapping
-    public ResponseEntity<ProjectResponse> createProject(@RequestBody CreateProjectRequest request) {
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ProjectResponse> createProject(
+            @ModelAttribute CreateProjectRequest request,
+            @RequestPart(value = "attachment", required = false) MultipartFile attachment) {
         com.example.demo_prj_intern.dto.respone.CurrentUserResponse currentUser = authService.getCurrentUser();
         if (!"CLIENT".equals(currentUser.getRole())) {
             throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.FORBIDDEN, "Chỉ CLIENT mới được tạo dự án");
         }
-        ProjectResponse response = projectService.createProject(currentUser.getId(), request);
+        ProjectResponse response = projectService.createProject(currentUser.getId(), request, attachment);
         return ResponseEntity.ok(response);
     }
 
