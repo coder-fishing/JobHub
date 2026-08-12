@@ -44,6 +44,7 @@ public class SecurityConfig {
 
                 // 4. Phân quyền Request
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/auth/choose-role").authenticated() // Yêu cầu xác thực để chọn role
                         .requestMatchers("/api/auth/**", "/error").permitAll() // Cho phép truy cập tự do vào /api/auth/* và /error
                         .requestMatchers("/oauth2/**").permitAll() // Cho phép oauth2 flow
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/freelancer/profile", "/api/freelancer/profile/*").permitAll() // Cho phép xem hồ sơ freelancer tự do

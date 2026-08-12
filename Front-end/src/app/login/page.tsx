@@ -9,7 +9,6 @@ import { FcGoogle } from 'react-icons/fc';
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState<'client' | 'freelancer'>('client');
 
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -90,29 +89,7 @@ export default function LoginPage() {
             </p>
           </div>
 
-          {/* Role selector tab */}
-          <div className="bg-slate-200/70 p-1.5 rounded-2xl border border-slate-200 grid grid-cols-2 gap-1 text-xs font-medium">
-            <button
-              onClick={() => setRole('client')}
-              className={`py-2.5 rounded-xl transition-all ${
-                role === 'client'
-                  ? 'bg-white text-slate-900 font-semibold shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              Tôi là Khách hàng (Client)
-            </button>
-            <button
-              onClick={() => setRole('freelancer')}
-              className={`py-2.5 rounded-xl transition-all ${
-                role === 'freelancer'
-                  ? 'bg-white text-slate-900 font-semibold shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              Tôi là Freelancer
-            </button>
-          </div>
+
 
           {/* Form Card */}
           <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-xl space-y-6">

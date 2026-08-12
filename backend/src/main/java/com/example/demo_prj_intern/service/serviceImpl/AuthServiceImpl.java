@@ -13,6 +13,8 @@ import com.example.demo_prj_intern.repository.UserRepository;
 import com.example.demo_prj_intern.repository.WalletRepository;
 import com.example.demo_prj_intern.security.JwtProvider;
 import com.example.demo_prj_intern.service.AuthService;
+import com.example.demo_prj_intern.service.OtpService;
+import com.example.demo_prj_intern.service.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -30,27 +32,45 @@ public class AuthServiceImpl implements AuthService {
     private final FreelancerProfileRepository freelancerProfileRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
+    private final OtpService otpService;
+    private final EmailService emailService;
 
     // Đăng Ký Tài Khoản Mới
     @Transactional
     @Override
     public AuthResponse register(RegisterRequest registerRequest) {
-        // Check trung email
-        if (userRepository.existsByEmail(registerRequest.getEmail())) {
-            throw new RuntimeException("Email đã tồn tại");
+        String normalizedEmail = registerRequest.getEmail().trim().toLowerCase();
+        Optional<UserEntity> optUser = userRepository.findByEmail(normalizedEmail);
+        
+        if (optUser.isPresent()) {
+            UserEntity existingUser = optUser.get();
+            
+            if (!"PENDING".equals(existingUser.getStatus()) || !"LOCAL".equals(existingUser.getAuthProvider())) {
+                throw new RuntimeException("Email đã tồn tại");
+            }
+            
+            // Nếu PENDING + LOCAL -> Không tạo mới, chỉ resend OTP
+            String otp = otpService.resendRegisterOtp(existingUser.getEmail());
+            emailService.sendRegistrationOtp(existingUser.getEmail(), otp);
+            
+            return new AuthResponse(existingUser.getId(), existingUser.getEmail(), existingUser.getRole(), existingUser.getStatus(), null);
         }
         
         UserEntity user = new UserEntity();
-        user.setEmail(registerRequest.getEmail());
+        user.setEmail(normalizedEmail);
 
         // Encode password
         String encodedPassword = passwordEncoder.encode(registerRequest.getPassword());
         user.setPassword(encodedPassword);
 
-        user.setRole(registerRequest.getRole());
+        user.setRole(null);
         user.setAuthProvider("LOCAL");
-        user.setStatus("ACTIVE");
-        user = userRepository.save(user);
+        user.setStatus("PENDING");
+        try {
+            user = userRepository.save(user);
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            throw new RuntimeException("Hệ thống đang xử lý yêu cầu hoặc email đã tồn tại, vui lòng thử lại sau.");
+        }
 
         // Tự Động Khởi Tạo Ví Cho Người Dùng Mới
         WalletEntity wallet = new WalletEntity();
@@ -59,18 +79,36 @@ public class AuthServiceImpl implements AuthService {
         wallet.setFreezingBalance(BigDecimal.ZERO);
         walletRepository.save(wallet);
 
-        // Nếu chọn Role là FREELANCER thì tự động tạo FreelancerProfile
-        if("FREELANCER".equals(registerRequest.getRole())) {
-            FreelancerProfileEntity freelancerProfileEntity = new FreelancerProfileEntity();
-            freelancerProfileEntity.setUser(user);
-            String fullNameInput = registerRequest.getFullName();
+        String otp = otpService.createRegisterOtp(user.getEmail());
+        emailService.sendRegistrationOtp(user.getEmail(), otp);
 
-            boolean hasValidName = fullNameInput != null && !fullNameInput.trim().isEmpty();
-            freelancerProfileEntity.setFullName(hasValidName ? fullNameInput.trim() : "FreeLancer " + user.getId());
+        return new AuthResponse(user.getId(), user.getEmail(), user.getRole(), user.getStatus(), null);
+    }
 
-            freelancerProfileRepository.save(freelancerProfileEntity);
+    // Xác Thực Mã OTP Đăng Ký
+    @Transactional
+    @Override
+    public AuthResponse verifyRegisterOtp(com.example.demo_prj_intern.dto.request.VerifyRegisterOtpRequest request) {
+        String normalizedEmail = request.getEmail().trim().toLowerCase();
+        UserEntity user = userRepository.findByEmail(normalizedEmail)
+                .orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại"));
+
+        if (!"LOCAL".equals(user.getAuthProvider())) {
+            throw new RuntimeException("Tài khoản này không yêu cầu xác thực OTP");
         }
-        
+
+        if (!"PENDING".equals(user.getStatus())) {
+            throw new RuntimeException("Tài khoản đã được xác thực hoặc bị khóa");
+        }
+
+        boolean isValid = otpService.verifyRegisterOtp(normalizedEmail, request.getOtpCode());
+        if (!isValid) {
+            throw new RuntimeException("Mã OTP không hợp lệ hoặc đã hết hạn");
+        }
+
+        user.setStatus("ACTIVE");
+        user = userRepository.save(user);
+
         String token = jwtProvider.generateToken(user.getEmail(), user.getRole());
         return new AuthResponse(user.getId(), user.getEmail(), user.getRole(), user.getStatus(), token);
     }
@@ -87,6 +125,10 @@ public class AuthServiceImpl implements AuthService {
 
         if ("BLOCKED".equals(user.getStatus())) {
             throw new RuntimeException("Tài khoản của bạn đã bị khóa!");
+        }
+
+        if ("PENDING".equals(user.getStatus())) {
+            return new AuthResponse(user.getId(), user.getEmail(), user.getRole(), user.getStatus(), null);
         }
 
         String token = jwtProvider.generateToken(user.getEmail(), user.getRole());
@@ -130,8 +172,26 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public AuthResponse chooseRole(ChooseRoleRequest request) {
-        UserEntity user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
+        org.springframework.security.core.Authentication authentication = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
+            throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.UNAUTHORIZED, "Chưa đăng nhập");
+        }
+
+        String email = authentication.getName();
+        UserEntity user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.NOT_FOUND, "Không tìm thấy người dùng"));
+
+        if (!"ACTIVE".equalsIgnoreCase(user.getStatus())) {
+            throw new RuntimeException("Tài khoản chưa được kích hoạt");
+        }
+
+        if (user.getRole() != null && !user.getRole().trim().isEmpty()) {
+            throw new RuntimeException("Tài khoản đã được phân quyền");
+        }
+
+        if (!"CLIENT".equals(request.getRole()) && !"FREELANCER".equals(request.getRole())) {
+            throw new RuntimeException("Role không hợp lệ");
+        }
 
         user.setRole(request.getRole());
         userRepository.save(user);
