@@ -42,10 +42,6 @@ public class ProjectEntity {
     @Column(name = "budget", nullable = false, precision = 12, scale = 2)
     private BigDecimal budget;
 
-    // === THÊM FIELD NÀY (rất quan trọng để lọc kỹ năng) ===
-    @Column(name = "required_skills", length = 500)
-    private String requiredSkills;   // Ví dụ: "Next.js,React,Spring Boot,TypeScript"
-
     @Column(name = "deadline", nullable = false)
     private LocalDateTime deadline;
 
