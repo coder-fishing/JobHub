@@ -144,8 +144,6 @@ export function CreateProjectForm({
           type="number"
           name="budget"
           required
-          min="100000"
-          step="100000"
           icon={DollarSign}
           value={formData.budget}
           onChange={onChange}
