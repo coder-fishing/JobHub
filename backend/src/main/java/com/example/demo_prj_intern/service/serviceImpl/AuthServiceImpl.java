@@ -5,6 +5,7 @@ import com.example.demo_prj_intern.dto.request.LoginRequest;
 import com.example.demo_prj_intern.dto.request.Oauth2LoginRequest;
 import com.example.demo_prj_intern.dto.request.RegisterRequest;
 import com.example.demo_prj_intern.dto.respone.AuthResponse;
+import com.example.demo_prj_intern.entity.ClientProfileEntity;
 import com.example.demo_prj_intern.entity.FreelancerProfileEntity;
 import com.example.demo_prj_intern.entity.UserEntity;
 import com.example.demo_prj_intern.entity.WalletEntity;
@@ -13,6 +14,7 @@ import com.example.demo_prj_intern.repository.UserRepository;
 import com.example.demo_prj_intern.repository.WalletRepository;
 import com.example.demo_prj_intern.security.JwtProvider;
 import com.example.demo_prj_intern.service.AuthService;
+import com.example.demo_prj_intern.repository.ClientProfileRepository;
 import com.example.demo_prj_intern.service.OtpService;
 import com.example.demo_prj_intern.service.EmailService;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +32,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final WalletRepository walletRepository;
     private final FreelancerProfileRepository freelancerProfileRepository;
+    private final ClientProfileRepository clientProfileRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
     private final OtpService otpService;
@@ -244,6 +247,13 @@ public class AuthServiceImpl implements AuthService {
                     profile.getSkills() != null && !profile.getSkills().trim().isEmpty()) {
                     profileCompleted = true;
                 }
+            }
+        } else if ("CLIENT".equals(user.getRole())) {
+            Optional<ClientProfileEntity> optionalProfile = clientProfileRepository.findByUserId(user.getId());
+            if (optionalProfile.isPresent()) {
+                com.example.demo_prj_intern.entity.ClientProfileEntity profile = optionalProfile.get();
+                fullName = profile.getCompanyName();
+                avatarUrl = profile.getAvatarUrl();
             }
         }
 

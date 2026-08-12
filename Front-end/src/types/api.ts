@@ -101,6 +101,45 @@ export interface ReviewResponse {
   createdAt: string;
 }
 
+export interface ClientProfileResponse {
+  id: number;
+  userId: number;
+  email: string;
+  companyName: string;
+  companyWebsite?: string;
+  industry?: string;
+  companySize?: string;
+  bio?: string;
+  location?: string;
+  avatarUrl?: string;
+  taxCode?: string;
+  totalProjectsPosted: number;
+  totalHiredCount: number;
+  hireRate: number;
+  totalSpent: number;
+  memberSince?: string;
+}
+
+export interface UpdateClientProfilePayload {
+  companyName: string;
+  companyWebsite?: string;
+  industry?: string;
+  companySize?: string;
+  bio?: string;
+  location?: string;
+  avatarUrl?: string;
+  taxCode?: string;
+}
+
+export interface ClientJobHistoryDTO {
+  id: number;
+  title: string;
+  budget: number;
+  status: 'OPEN' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
+  createdAt: string;
+  maxFreelancers: number;
+}
+
 
 
 
