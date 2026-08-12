@@ -25,6 +25,11 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/register/verify")
+    public ResponseEntity<AuthResponse> verifyRegisterOtp(@RequestBody com.example.demo_prj_intern.dto.request.VerifyRegisterOtpRequest request) {
+        return ResponseEntity.ok(authService.verifyRegisterOtp(request));
+    }
+
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest loginRequest) {
         AuthResponse response = authService.login(loginRequest);

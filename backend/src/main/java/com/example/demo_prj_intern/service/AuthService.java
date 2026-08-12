@@ -12,6 +12,9 @@ public interface AuthService {
     // Register
     AuthResponse register(RegisterRequest registerRequest);
 
+    // Verify Register OTP
+    AuthResponse verifyRegisterOtp(com.example.demo_prj_intern.dto.request.VerifyRegisterOtpRequest request);
+
     // Login by username password
     AuthResponse login(LoginRequest loginRequest);
 

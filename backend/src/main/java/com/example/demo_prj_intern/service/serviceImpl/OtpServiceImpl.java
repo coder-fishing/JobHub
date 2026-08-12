@@ -69,18 +69,18 @@ public class OtpServiceImpl implements OtpService {
         String normalizedEmail = normalizeEmail(email);
         String purpose = "REGISTER";
         
-        // Remove existing OTP if any (resend new OTP makes old one invalid)
-        deleteOtp(normalizedEmail, purpose);
-
         String otp = generateOtp();
         String codeHash = hashOtp(otp, normalizedEmail);
 
-        OtpEntity otpEntity = new OtpEntity();
+        OtpEntity otpEntity = otpRepository.findByEmailAndPurpose(normalizedEmail, purpose)
+                .orElse(new OtpEntity());
+
         otpEntity.setEmail(normalizedEmail);
         otpEntity.setCodeHash(codeHash);
         otpEntity.setPurpose(purpose);
         otpEntity.setExpiresAt(LocalDateTime.now().plusMinutes(OTP_EXPIRY_MINUTES));
         otpEntity.setFailedAttempts(0);
+        otpEntity.setCreatedAt(LocalDateTime.now());
 
         try {
             otpRepository.saveAndFlush(otpEntity);
