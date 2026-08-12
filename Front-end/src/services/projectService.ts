@@ -77,6 +77,24 @@ export const projectService = {
         return false;
       }
 
+      // ==================== THÊM ĐOẠN NÀY ====================
+      // Skills Filter
+      if (skills && skills.length > 0) {
+        const projectSkills = project.requiredSkills
+          ? project.requiredSkills.split(',').map((s) => s.trim().toLowerCase())
+          : [];
+
+        // OR logic: project có ít nhất 1 skill trong danh sách đã chọn
+        const hasMatchingSkill = skills.some((skill) =>
+          projectSkills.includes(skill.toLowerCase())
+        );
+
+        if (!hasMatchingSkill) {
+          return false;
+        }
+      }
+      // ======================================================
+
       return true;
     });
 
@@ -106,11 +124,25 @@ export const projectService = {
   /**
    * Create a new project
    */
-  async createProject(payload: CreateProjectPayload): Promise<ProjectResponse> {
+  async createProject(payload: CreateProjectPayload, attachment?: File | null): Promise<ProjectResponse> {
+    const token = localStorage.getItem('token');
+    const formData = new FormData();
+    formData.append('title', payload.title);
+    formData.append('description', payload.description);
+    formData.append('budget', String(payload.budget));
+    formData.append('requiredSkills', payload.requiredSkills);
+    formData.append('maxFreelancers', String(payload.maxFreelancers));
+    formData.append('deadline', payload.deadline);
+    if (attachment) {
+      formData.append('attachment', attachment);
+    }
+
     const res = await fetch(API_BASE, {
       method: 'POST',
-      headers: getAuthHeaders(),
-      body: JSON.stringify(payload)
+      headers: {
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+      },
+      body: formData,
     });
     
     if (!res.ok) {
@@ -133,5 +165,3 @@ export const projectService = {
     return { success: true };
   },
 };
-
-

@@ -11,15 +11,14 @@ export default function RegisterPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [role, setRole] = useState<'CLIENT' | 'FREELANCER'>('CLIENT');
-
+  const [isLoading, setIsLoading] = useState(false);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password !== confirmPassword) {
       alert("Mật khẩu xác nhận không khớp!");
       return;
     }
-    
+    setIsLoading(true);
     try {
       const response = await fetch('http://localhost:8080/api/auth/register', {
         method: 'POST',
@@ -29,14 +28,13 @@ export default function RegisterPage() {
         body: JSON.stringify({
           email,
           password,
-          role,
           fullName
         }),
       });
 
       if (response.ok) {
-        alert("Đăng ký thành công! Đang chuyển hướng đến trang Đăng nhập...");
-        window.location.href = '/login';
+        // alert("Đăng ký thành công! Vui lòng kiểm tra email để nhận mã OTP.");
+        window.location.href = `/verify-otp?email=${encodeURIComponent(email)}`;
       } else {
         const errorData = await response.json().catch(() => null);
         alert("Đăng ký thất bại: " + (errorData?.message || "Lỗi không xác định"));
@@ -44,6 +42,8 @@ export default function RegisterPage() {
     } catch (error) {
       console.error("Lỗi kết nối:", error);
       alert("Không thể kết nối đến máy chủ Backend!");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -74,29 +74,7 @@ export default function RegisterPage() {
             </p>
           </div>
 
-          {/* Role selector tab */}
-          <div className="bg-slate-200/70 p-1.5 rounded-2xl border border-slate-200 grid grid-cols-2 gap-1 text-xs font-medium">
-            <button
-              onClick={() => setRole('CLIENT')}
-              className={`py-2.5 rounded-xl transition-all ${
-                role === 'CLIENT'
-                  ? 'bg-white text-slate-900 font-semibold shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              Tôi là Khách hàng (Client)
-            </button>
-            <button
-              onClick={() => setRole('FREELANCER')}
-              className={`py-2.5 rounded-xl transition-all ${
-                role === 'FREELANCER'
-                  ? 'bg-white text-slate-900 font-semibold shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              Tôi là Freelancer
-            </button>
-          </div>
+
 
           {/* Form Card */}
           <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-xl space-y-6">
@@ -179,11 +157,12 @@ export default function RegisterPage() {
 
               <button
                 type="submit"
-                className="w-full gradient-button text-white font-semibold text-sm py-3.5 rounded-xl shadow-md flex items-center justify-center space-x-2 group"
+                disabled={isLoading}
+                className="w-full gradient-button text-white font-semibold text-sm py-3.5 rounded-xl shadow-md flex items-center justify-center space-x-2 group disabled:opacity-70 disabled:cursor-not-allowed"
                 style={{ background: 'linear-gradient(to right, #10b981, #059669)' }} // matching original CSS
               >
-                <span>Đăng Ký</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                <span>{isLoading ? 'Đang xử lý...' : 'Đăng Ký Tài Khoản'}</span>
+                {!isLoading && <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />}
               </button>
             </form>
 

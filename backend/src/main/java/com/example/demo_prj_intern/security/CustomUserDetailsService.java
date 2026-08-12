@@ -23,16 +23,24 @@ public class CustomUserDetailsService implements UserDetailsService {
         UserEntity user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User Not Found with email: " + email));
 
-        boolean accountNonLocked = !"BLOCKED".equalsIgnoreCase(user.getStatus());
+        boolean isEnabled = "ACTIVE".equalsIgnoreCase(user.getStatus());
+        boolean isAccountNonLocked = !"BLOCKED".equalsIgnoreCase(user.getStatus());
+
+        java.util.List<SimpleGrantedAuthority> authorities;
+        if (user.getRole() != null && !user.getRole().trim().isEmpty()) {
+            authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole()));
+        } else {
+            authorities = Collections.emptyList();
+        }
 
         return new User(
                 user.getEmail(),
                 user.getPassword() != null ? user.getPassword() : "",
-                true, // enabled
+                isEnabled, // enabled
                 true, // accountNonExpired
                 true, // credentialsNonExpired
-                accountNonLocked,
-                Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole()))
+                isAccountNonLocked, // accountNonLocked
+                authorities
         );
     }
 }
