@@ -14,6 +14,8 @@ import com.example.demo_prj_intern.service.ProposalService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -109,7 +111,7 @@ public class ProposalServiceImpl implements ProposalService {
 
         // Kiểm tra quyền sở hữu dự án: Chỉ Client tạo dự án mới được xem danh sách apply
         if (project.getClient() == null || !clientId.equals(project.getClient().getId())) {
-            throw new IllegalArgumentException("Bạn không có quyền xem danh sách ứng tuyển của dự án này");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền xem danh sách ứng tuyển của dự án này");
         }
 
         return proposalRepository.findByProjectId(projectId).stream()
@@ -152,7 +154,7 @@ public class ProposalServiceImpl implements ProposalService {
         ProjectEntity project = proposal.getProject();
         // Kiểm tra quyền sở hữu dự án
         if (project.getClient() == null || !clientId.equals(project.getClient().getId())) {
-            throw new IllegalArgumentException("Bạn không phải chủ sở hữu dự án này để duyệt hồ sơ");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không phải chủ sở hữu dự án này để duyệt hồ sơ");
         }
 
         // Phải đảm bảo dự án đang OPEN
@@ -213,7 +215,7 @@ public class ProposalServiceImpl implements ProposalService {
         // Kiểm tra quyền sở hữu dự án
         ProjectEntity project = proposal.getProject();
         if (project.getClient() == null || !clientId.equals(project.getClient().getId())) {
-            throw new IllegalArgumentException("Bạn không có quyền từ chối hồ sơ của dự án này");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền từ chối hồ sơ của dự án này");
         }
 
         // Đánh dấu từ chối hồ sơ

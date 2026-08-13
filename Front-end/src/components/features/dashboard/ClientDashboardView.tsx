@@ -8,6 +8,7 @@ interface ClientDashboardViewProps {
   proposals: ProposalResponse[];
   onAcceptProposal: (id: number) => void;
   onRejectProposal: (id: number) => void;
+  processingProposalId?: number | null;
 }
 
 export function ClientDashboardView({
@@ -15,7 +16,12 @@ export function ClientDashboardView({
   proposals,
   onAcceptProposal,
   onRejectProposal,
+  processingProposalId,
 }: ClientDashboardViewProps) {
+  const pendingCount = proposals.filter((p) => p.status === 'PENDING').length;
+  const acceptedCount = proposals.filter((p) => p.status === 'ACCEPTED').length;
+  const rejectedCount = proposals.filter((p) => p.status === 'REJECTED').length;
+
   return (
     <div className="space-y-8">
       {/* Client Projects List */}
@@ -33,7 +39,12 @@ export function ClientDashboardView({
         </div>
 
         <div className="space-y-4">
-          {projects.map((project) => (
+          {projects.length === 0 ? (
+            <div className="text-center py-6">
+              <p className="text-slate-500">Bạn chưa đăng dự án nào.</p>
+            </div>
+          ) : 
+            projects.map((project) => (
             <div
               key={project.id}
               className="p-5 rounded-2xl bg-slate-50 border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
@@ -66,16 +77,28 @@ export function ClientDashboardView({
       {/* Proposals Received */}
       <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-xs space-y-6">
         <div className="border-b border-slate-100 pb-4">
-          <h3 className="text-lg font-bold text-slate-900">
-            Đề Xuất Chào Thầu Từ Freelancers ({proposals.length})
-          </h3>
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-bold text-slate-900">
+              Đề Xuất Chào Thầu Từ Freelancers ({proposals.length})
+            </h3>
+            <div className="flex gap-3 text-xs font-semibold">
+              <span className="bg-slate-100 text-slate-600 px-2 py-1 rounded-md">Chờ duyệt: {pendingCount}</span>
+              <span className="bg-emerald-50 text-emerald-600 px-2 py-1 rounded-md">Đã nhận: {acceptedCount}</span>
+              <span className="bg-rose-50 text-rose-600 px-2 py-1 rounded-md">Đã từ chối: {rejectedCount}</span>
+            </div>
+          </div>
           <p className="text-xs text-slate-500 mt-1">
             Xem xét phương án triển khai & mức giá thầu để phê duyệt Freelancer phù hợp
           </p>
         </div>
 
         <div className="space-y-4">
-          {proposals.map((proposal) => (
+          {proposals.length === 0 ? (
+            <div className="text-center py-10">
+              <p className="text-slate-500">Bạn chưa nhận được đề xuất nào.</p>
+            </div>
+          ) : 
+            proposals.map((proposal) => (
             <div
               key={proposal.id}
               className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4 hover:border-slate-300 transition-all"
@@ -137,15 +160,17 @@ export function ClientDashboardView({
                     <>
                       <button
                         onClick={() => onRejectProposal(proposal.id)}
-                        className="px-3.5 py-1.5 border border-slate-200 text-slate-600 hover:bg-rose-50 hover:text-rose-700 hover:border-rose-200 rounded-xl text-xs font-semibold transition-colors"
+                        disabled={processingProposalId === proposal.id}
+                        className="px-3.5 py-1.5 border border-slate-200 text-slate-600 hover:bg-rose-50 hover:text-rose-700 hover:border-rose-200 rounded-xl text-xs font-semibold transition-colors disabled:opacity-50"
                       >
                         Từ Chối
                       </button>
                       <button
                         onClick={() => onAcceptProposal(proposal.id)}
-                        className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-colors shadow-sm"
+                        disabled={processingProposalId === proposal.id}
+                        className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-colors shadow-sm disabled:opacity-50"
                       >
-                        Chấp Nhận Chào Thầu
+                        {processingProposalId === proposal.id ? 'Đang xử lý...' : 'Chấp Nhận Chào Thầu'}
                       </button>
                     </>
                   )}
