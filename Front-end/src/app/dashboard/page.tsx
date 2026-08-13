@@ -67,12 +67,36 @@ export default function DashboardPage() {
           setProposals(propData);
           setIsLoading(false);
         }
+      }).catch((error) => {
+        if (error.response?.status === 401) {
+          localStorage.removeItem('token');
+          localStorage.removeItem('user_role');
+          window.location.href = '/login';
+        } else if (error.response?.status === 403) {
+          alert('Bạn không có quyền truy cập dữ liệu này.');
+          if (isMounted) setIsLoading(false);
+        } else {
+          alert('Có lỗi xảy ra khi tải dữ liệu.');
+          if (isMounted) setIsLoading(false);
+        }
       });
     } else {
       proposalService.getFreelancerProposals().then((propData) => {
         if (isMounted) {
           setProposals(propData);
           setIsLoading(false);
+        }
+      }).catch((error) => {
+        if (error.response?.status === 401) {
+          localStorage.removeItem('token');
+          localStorage.removeItem('user_role');
+          window.location.href = '/login';
+        } else if (error.response?.status === 403) {
+          alert('Bạn không có quyền truy cập dữ liệu này.');
+          if (isMounted) setIsLoading(false);
+        } else {
+          alert('Có lỗi xảy ra khi tải dữ liệu.');
+          if (isMounted) setIsLoading(false);
         }
       });
     }
@@ -82,18 +106,32 @@ export default function DashboardPage() {
     };
   }, [role]);
 
+  const [processingId, setProcessingId] = useState<number | null>(null);
+
   const handleAcceptProposal = async (proposalId: number) => {
-    const updated = await proposalService.updateProposalStatus(proposalId, 'ACCEPTED');
-    setProposals((prev) =>
-      prev.map((p) => (p.id === proposalId ? updated : p))
-    );
+    try {
+      setProcessingId(proposalId);
+      await proposalService.updateProposalStatus(proposalId, 'ACCEPTED');
+      const refreshedProposals = await proposalService.getClientProposals();
+      setProposals(refreshedProposals);
+    } catch (error: any) {
+      alert(error.message || 'Lỗi khi chấp nhận hồ sơ');
+    } finally {
+      setProcessingId(null);
+    }
   };
 
   const handleRejectProposal = async (proposalId: number) => {
-    const updated = await proposalService.updateProposalStatus(proposalId, 'REJECTED');
-    setProposals((prev) =>
-      prev.map((p) => (p.id === proposalId ? updated : p))
-    );
+    try {
+      setProcessingId(proposalId);
+      await proposalService.updateProposalStatus(proposalId, 'REJECTED');
+      const refreshedProposals = await proposalService.getClientProposals();
+      setProposals(refreshedProposals);
+    } catch (error: any) {
+      alert(error.message || 'Lỗi khi từ chối hồ sơ');
+    } finally {
+      setProcessingId(null);
+    }
   };
 
   if (!role) {
@@ -124,6 +162,7 @@ export default function DashboardPage() {
             proposals={proposals}
             onAcceptProposal={handleAcceptProposal}
             onRejectProposal={handleRejectProposal}
+            processingProposalId={processingId}
           />
         ) : (
           <FreelancerDashboardView proposals={proposals} />
