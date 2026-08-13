@@ -36,7 +36,7 @@ public class ProjectEntity {
     @Column(name = "description", nullable = false, columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "required_skills", columnDefinition = "TEXT")
+    @Column(name = "required_skills", length = 750)
     private String requiredSkills;
 
     @Column(name = "budget", nullable = false, precision = 12, scale = 2)
