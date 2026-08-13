@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { User, Briefcase, DollarSign, Code2, Save, CheckCircle2, AlertCircle } from 'lucide-react';
 import { FormInput, FormTextarea } from '@/components/ui/FormControls';
 import { SkillsInput } from '@/components/ui/SkillsInput';
+import { AvatarUploadPreview } from './AvatarUploadPreview';
 
 export interface ProfileFormData {
   fullName: string;
@@ -40,16 +41,18 @@ export function ProfileEditForm({
   onSubmit,
   isClient = false,
 }: ProfileEditFormProps) {
+  const [uploadError, setUploadError] = useState<string | null>(null);
+
   return (
     <form onSubmit={onSubmit} className="bg-white p-8 rounded-3xl border border-slate-200 shadow-xs space-y-6">
       <h3 className="text-lg font-bold text-slate-900 border-b border-slate-100 pb-4">
         {isClient ? 'Chỉnh Sửa Hồ Sơ Doanh Nghiệp / Công Ty' : 'Chỉnh Sửa Thông Tin Cá Nhân'}
       </h3>
 
-      {errorMsg && (
+      {(errorMsg || uploadError) && (
         <div className="bg-rose-50 border border-rose-200 text-rose-700 text-xs p-4 rounded-xl flex items-center space-x-2">
           <AlertCircle className="w-4 h-4 shrink-0" />
-          <span>{errorMsg}</span>
+          <span>{errorMsg || uploadError}</span>
         </div>
       )}
 
@@ -110,14 +113,12 @@ export function ProfileEditForm({
         </div>
       )}
 
-      {/* Avatar / Logo URL */}
-      <FormInput
-        label={isClient ? "Đường dẫn Logo Công Ty (Logo URL)" : "Đường dẫn Ảnh Đại Diện (Avatar URL)"}
-        name="avatarUrl"
-        icon={User}
-        value={formData.avatarUrl || ''}
-        onChange={onChange}
-        placeholder="https://images.unsplash.com/photo-..."
+      {/* Avatar / Logo Upload Component */}
+      <AvatarUploadPreview
+        avatarUrl={formData.avatarUrl}
+        isClient={isClient}
+        onChange={(url) => onChange({ target: { name: 'avatarUrl', value: url } } as any)}
+        onError={(err) => setUploadError(err)}
       />
 
       {/* Bio */}
