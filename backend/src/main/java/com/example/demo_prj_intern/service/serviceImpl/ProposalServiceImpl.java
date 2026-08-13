@@ -120,6 +120,27 @@ public class ProposalServiceImpl implements ProposalService {
     }
 
     @Override
+    public List<ProposalResponse> getClientProposals(Long clientId) {
+        if (clientId == null) {
+            throw new IllegalArgumentException("Client ID không được để trống");
+        }
+        
+        // Find all projects owned by the client
+        List<ProjectEntity> clientProjects = projectRepository.findAll().stream()
+                .filter(p -> p.getClient() != null && p.getClient().getId().equals(clientId))
+                .collect(Collectors.toList());
+                
+        List<Long> projectIds = clientProjects.stream()
+                .map(ProjectEntity::getId)
+                .collect(Collectors.toList());
+                
+        return proposalRepository.findAll().stream()
+                .filter(p -> p.getProject() != null && projectIds.contains(p.getProject().getId()))
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public List<ProposalResponse> getProposalsByFreelancer(Long freelancerId) {
         if (freelancerId == null) {
             throw new IllegalArgumentException("Freelancer ID không được để trống");
