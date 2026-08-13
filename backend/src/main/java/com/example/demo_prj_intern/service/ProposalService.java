@@ -11,6 +11,9 @@ public interface ProposalService {
     // Lấy danh sách hồ sơ đã apply vào một dự án (Dành cho Client xem)
     List<ProposalResponse> getProposalsByProject(Long clientId, Long projectId);
 
+    // Lấy danh sách tất cả hồ sơ apply vào các dự án của Client
+    List<ProposalResponse> getClientProposals(Long clientId);
+
     // Lấy danh sách các hồ sơ freelancer đã gửi
     List<ProposalResponse> getProposalsByFreelancer(Long freelancerId);
 

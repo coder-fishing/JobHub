@@ -98,7 +98,7 @@ export function ClientDashboardView({
               <p className="text-slate-500">Bạn chưa nhận được đề xuất nào.</p>
             </div>
           ) : 
-            proposals.map((proposal) => (
+            [...proposals].sort((a, b) => b.id - a.id).map((proposal) => (
             <div
               key={proposal.id}
               className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4 hover:border-slate-300 transition-all"
