@@ -25,13 +25,13 @@ public interface ProjectRepository extends JpaRepository<ProjectEntity, Long> {
     Page<ProjectEntity> findByTitleContainingAndStatus(String title, String status, Pageable pageable);
     @Query("""
         SELECT p FROM ProjectEntity p
-        WHERE (:keyword IS NULL OR :keyword = '' OR
-               LOWER(p.title) LIKE LOWER(CONCAT('%', :keyword, '%')) OR
-               LOWER(p.description) LIKE LOWER(CONCAT('%', :keyword, '%')))
-          AND (:statuses IS NULL OR p.status IN :statuses)
-          AND (:maxBudget IS NULL OR p.budget <= :maxBudget)
-          AND (:skill IS NULL OR :skill = '' OR
-               LOWER(p.requiredSkills) LIKE LOWER(CONCAT('%', :skill, '%')))
+        WHERE (:keyword IS NULL OR TRIM(:keyword) = '' OR
+            LOWER(p.title) LIKE LOWER(CONCAT('%', TRIM(:keyword), '%')) OR
+            LOWER(p.description) LIKE LOWER(CONCAT('%', TRIM(:keyword), '%')))
+        AND (:statuses IS NULL OR p.status IN :statuses)
+        AND (:maxBudget IS NULL OR p.budget <= :maxBudget)
+        AND (:skill IS NULL OR TRIM(:skill) = '' OR
+            LOWER(p.requiredSkills) LIKE LOWER(CONCAT('%', TRIM(:skill), '%')))
         """)
     Page<ProjectEntity> searchProjects(
             @Param("keyword") String keyword,
@@ -40,4 +40,13 @@ public interface ProjectRepository extends JpaRepository<ProjectEntity, Long> {
             @Param("skill") String skill,
             Pageable pageable
     );
+
+
+    // Đếm số lượng dự án gom nhóm theo Trạng thái (OPEN, IN_PROGRESS...)
+    @Query("SELECT p.status, COUNT(p) FROM ProjectEntity p GROUP BY p.status")
+    List<Object[]> countProjectsByStatus();
+
+    // Lấy tất cả chuỗi requiredSkills để tách ra đếm từng Skill
+    @Query("SELECT p.requiredSkills FROM ProjectEntity p WHERE p.requiredSkills IS NOT NULL")
+    List<String> findAllRequiredSkills();
 }

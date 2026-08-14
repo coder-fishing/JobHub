@@ -50,6 +50,7 @@ public class SecurityConfig {
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/freelancer/profile", "/api/freelancer/profile/*").permitAll() // Cho phép xem hồ sơ freelancer tự do
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/client/profile/*", "/api/client/profile/*/jobs").permitAll() // Cho phép xem hồ sơ & lịch sử tuyển dụng của Client tự do
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/projects", "/api/projects/*").permitAll() // Cho phép xem dự án tự do
+                        .requestMatchers("/api/project/stats", "/api/project/search", "/api/project/**").permitAll()
                         .anyRequest().authenticated()               // Các API còn lại bắt buộc đăng nhập
                 )
                 
