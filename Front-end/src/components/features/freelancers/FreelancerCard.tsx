@@ -27,7 +27,7 @@ export function FreelancerCard({ freelancer }: FreelancerCardProps) {
                     {freelancer.fullName}
                   </Link>
                 </h3>
-                <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" title="Đã xác minh" />
+                <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" aria-label="Đã xác minh" />
               </div>
               <p className="text-xs text-slate-500 font-medium line-clamp-1 mt-0.5">
                 {freelancer.title}

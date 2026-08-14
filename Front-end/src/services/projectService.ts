@@ -3,7 +3,8 @@ import { ProjectResponse } from '@/types/api';
 
 export interface ProposalPayload {
   projectId: string | number;
-  proposalBid: string;
+  proposalBid: number | string;
+  estimatedDays: number | string;
   coverLetter: string;
 }
 
@@ -135,11 +136,25 @@ export const projectService = {
   /**
    * Create a new project
    */
-  async createProject(payload: CreateProjectPayload): Promise<ProjectResponse> {
+  async createProject(payload: CreateProjectPayload, attachment?: File | null): Promise<ProjectResponse> {
+    const token = localStorage.getItem('token');
+    const formData = new FormData();
+    formData.append('title', payload.title);
+    formData.append('description', payload.description);
+    formData.append('budget', String(payload.budget));
+    formData.append('requiredSkills', payload.requiredSkills);
+    formData.append('maxFreelancers', String(payload.maxFreelancers));
+    formData.append('deadline', payload.deadline);
+    if (attachment) {
+      formData.append('attachment', attachment);
+    }
+
     const res = await fetch(API_BASE, {
       method: 'POST',
-      headers: getAuthHeaders(),
-      body: JSON.stringify(payload)
+      headers: {
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+      },
+      body: formData,
     });
     
     if (!res.ok) {
@@ -153,12 +168,25 @@ export const projectService = {
    * Submit proposal for a project
    */
   async submitProposal(payload: ProposalPayload): Promise<{ success: boolean }> {
-    // Mô phỏng delay API submit proposal
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    console.log('Sending proposal for project:', payload.projectId, {
-      proposalBid: payload.proposalBid,
-      coverLetter: payload.coverLetter,
+    const token = localStorage.getItem('token');
+    const res = await fetch('http://localhost:8080/api/proposal', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify({
+        projectId: Number(payload.projectId),
+        proposedPrice: Number(payload.proposalBid),
+        estimatedDays: Number(payload.estimatedDays),
+        coverLetter: payload.coverLetter,
+      }),
     });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || 'Lỗi khi gửi đề xuất');
+    }
     return { success: true };
   },
 

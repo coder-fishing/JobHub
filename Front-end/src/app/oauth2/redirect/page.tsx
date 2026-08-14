@@ -33,11 +33,14 @@ function RedirectContent() {
           return res.json();
         })
         .then(meData => {
-          localStorage.setItem('user_role', meData.role);
+          localStorage.setItem('user_role', meData.role ?? '');
           if (meData.fullName) localStorage.setItem('user_fullname', meData.fullName);
           if (meData.avatarUrl) localStorage.setItem('user_avatar', meData.avatarUrl);
-          
-          if (meData.role === 'FREELANCER' && !meData.profileCompleted) {
+
+          // User Google mới chưa chọn role → redirect đến trang chọn role
+          if (!meData.role || meData.role === 'ROLE_PENDING') {
+            router.push('/choose-role');
+          } else if (meData.role === 'FREELANCER' && !meData.profileCompleted) {
             router.push('/profile/complete');
           } else {
             router.push('/dashboard');

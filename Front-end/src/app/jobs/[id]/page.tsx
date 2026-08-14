@@ -6,6 +6,7 @@ import { ArrowLeft } from 'lucide-react';
 import { ProjectResponse } from '@/types/api';
 import { JobCardSkeleton } from '@/components/ui/Skeletons';
 import { projectService } from '@/services/projectService';
+import { proposalService } from '@/services/proposalService';
 import {
   JobDetailHeader,
   JobDetailDescription,
@@ -19,26 +20,70 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
 
   const [project, setProject] = useState<ProjectResponse | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [hasApplied, setHasApplied] = useState<boolean>(false);
+  const [userRole, setUserRole] = useState<string | null>(null);
 
   useEffect(() => {
     let isMounted = true;
-    projectService.getProjectById(id).then((data) => {
-      if (isMounted) {
+    
+    const loadData = async () => {
+      try {
+        const data = await projectService.getProjectById(id);
+        if (!isMounted) return;
         setProject(data);
-        setIsLoading(false);
+
+        let currentRole = localStorage.getItem('user_role');
+        const token = localStorage.getItem('token');
+        
+        if (token) {
+          const res = await fetch('http://localhost:8080/api/auth/me', {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          if (res.ok) {
+            const data = await res.json();
+            currentRole = data.role.toUpperCase();
+          }
+        }
+        
+        if (isMounted && currentRole) setUserRole(currentRole);
+
+        if (currentRole === 'FREELANCER') {
+          const proposals = await proposalService.getFreelancerProposals();
+          const applied = proposals.some((p) => Number(p.projectId) === Number(id));
+          if (isMounted) setHasApplied(applied);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        if (isMounted) setIsLoading(false);
       }
-    });
+    };
+
+    loadData();
 
     return () => {
       isMounted = false;
     };
   }, [id]);
 
-  const handleProposalSubmit = async (proposal: { proposalBid: string; coverLetter: string }) => {
-    await projectService.submitProposal({
-      projectId: id,
-      ...proposal,
-    });
+  const handleProposalSubmit = async (proposal: { proposalBid: string; estimatedDays: string; coverLetter: string }) => {
+    try {
+      await projectService.submitProposal({
+        projectId: id,
+        ...proposal,
+      });
+      setHasApplied(true);
+    } catch (err: any) {
+      if (err.message === 'Bạn đã gửi hồ sơ ứng tuyển cho dự án này rồi!') {
+        const proposals = await proposalService.getFreelancerProposals();
+        const applied = proposals.some((p) => Number(p.projectId) === Number(id));
+        if (applied) {
+          setHasApplied(true);
+          return;
+        }
+      }
+      throw err;
+    }
   };
 
   if (isLoading) {
@@ -73,10 +118,14 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
           <div className="lg:col-span-8 space-y-6">
             <JobDetailHeader project={project} />
             <JobDetailDescription project={project} />
-            <JobProposalForm
-              initialBid={project.budget.toString()}
-              onSubmit={handleProposalSubmit}
-            />
+            
+            {userRole === 'FREELANCER' && (
+              <JobProposalForm
+                initialBid={project.budget.toString()}
+                hasApplied={hasApplied}
+                onSubmit={handleProposalSubmit}
+              />
+            )}
           </div>
 
           {/* Sidebar Right (4 cols) */}

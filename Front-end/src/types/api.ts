@@ -7,6 +7,7 @@ export interface ProjectResponse {
   description: string;
   budget: number;
   requiredSkills: string; // "Java, Spring Boot, React"
+  attachmentUrl?: string;
   maxFreelancers: number;
   status: 'OPEN' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
   deadline: string; // ISO Date String "YYYY-MM-DD"
@@ -26,7 +27,7 @@ export interface CurrentUserResponse {
 export interface FreelancerProfileResponse {
   id: number;
   userId: number;
-  email: string;
+  email?: string;
   fullName: string;
   title: string;
   bio: string;
@@ -50,13 +51,13 @@ export interface UpdateFreelancerProfilePayload {
 export interface ProposalResponse {
   id: number;
   projectId: number;
-  projectTitle: string;
+  projectTitle?: string;
   freelancerId: number;
   freelancerName: string;
-  freelancerEmail: string;
-  proposalBid: number;
+  proposedPrice: number;
+  estimatedDays: number;
   coverLetter: string;
-  status: 'PENDING' | 'ACCEPTED' | 'REJECTED';
+  status: 'PENDING' | 'ACCEPTED' | 'REJECTED' | string;
   createdAt: string;
 }
 
@@ -98,6 +99,45 @@ export interface ReviewResponse {
   rating: number;
   comment: string;
   createdAt: string;
+}
+
+export interface ClientProfileResponse {
+  id: number;
+  userId: number;
+  email: string;
+  companyName: string;
+  companyWebsite?: string;
+  industry?: string;
+  companySize?: string;
+  bio?: string;
+  location?: string;
+  avatarUrl?: string;
+  taxCode?: string;
+  totalProjectsPosted: number;
+  totalHiredCount: number;
+  hireRate: number;
+  totalSpent: number;
+  memberSince?: string;
+}
+
+export interface UpdateClientProfilePayload {
+  companyName: string;
+  companyWebsite?: string;
+  industry?: string;
+  companySize?: string;
+  bio?: string;
+  location?: string;
+  avatarUrl?: string;
+  taxCode?: string;
+}
+
+export interface ClientJobHistoryDTO {
+  id: number;
+  title: string;
+  budget: number;
+  status: 'OPEN' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
+  createdAt: string;
+  maxFreelancers: number;
 }
 
 

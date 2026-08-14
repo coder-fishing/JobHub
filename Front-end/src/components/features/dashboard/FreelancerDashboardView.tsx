@@ -29,7 +29,12 @@ export function FreelancerDashboardView({ proposals }: FreelancerDashboardViewPr
       </div>
 
       <div className="space-y-4">
-        {proposals.map((proposal) => (
+        {proposals.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-slate-500 font-medium">Bạn chưa nộp báo giá nào.</p>
+          </div>
+        ) : (
+          proposals.map((proposal) => (
           <div
             key={proposal.id}
             className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4 hover:border-slate-300 transition-all"
@@ -39,7 +44,7 @@ export function FreelancerDashboardView({ proposals }: FreelancerDashboardViewPr
                 <span className="text-[11px] text-slate-400 block font-medium">Dự án thầu:</span>
                 <h4 className="font-bold text-slate-900 text-base">
                   <Link href={`/jobs/${proposal.projectId}`} className="hover:text-emerald-600 transition-colors">
-                    {proposal.projectTitle}
+                    {proposal.projectTitle || `Dự án #${proposal.projectId}`}
                   </Link>
                 </h4>
               </div>
@@ -47,14 +52,15 @@ export function FreelancerDashboardView({ proposals }: FreelancerDashboardViewPr
               <div className="text-right shrink-0">
                 <span className="text-[11px] text-slate-400 block">Giá thầu của bạn</span>
                 <span className="text-base font-extrabold text-emerald-600">
-                  {proposal.proposalBid.toLocaleString('vi-VN')} VNĐ
+                  {proposal.proposedPrice?.toLocaleString('vi-VN')} VNĐ
                 </span>
               </div>
             </div>
 
             <div className="text-xs text-slate-600 bg-slate-50 p-4 rounded-xl space-y-1">
-              <span className="font-semibold text-slate-800 block">Thư giới thiệu của bạn:</span>
-              <p className="leading-relaxed">{proposal.coverLetter}</p>
+              <span className="font-semibold text-slate-800 block">Thời gian ước tính: {proposal.estimatedDays} ngày</span>
+              <span className="font-semibold text-slate-800 block mt-2">Thư giới thiệu của bạn:</span>
+              <p className="leading-relaxed whitespace-pre-wrap">{proposal.coverLetter}</p>
             </div>
 
             <div className="flex items-center justify-between pt-1">
@@ -91,7 +97,8 @@ export function FreelancerDashboardView({ proposals }: FreelancerDashboardViewPr
               </div>
             </div>
           </div>
-        ))}
+          ))
+        )}
       </div>
     </div>
   );

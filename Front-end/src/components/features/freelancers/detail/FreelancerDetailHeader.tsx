@@ -26,7 +26,7 @@ export function FreelancerDetailHeader({
               <h1 className="text-2xl font-extrabold text-slate-900">
                 {freelancer.fullName}
               </h1>
-              <ShieldCheck className="w-5 h-5 text-emerald-600" title="Đã xác minh" />
+              <ShieldCheck className="w-5 h-5 text-emerald-600" aria-label="Đã xác minh" />
             </div>
             <p className="text-sm font-semibold text-slate-600">
               {freelancer.title}

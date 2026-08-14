@@ -10,6 +10,8 @@ interface SkillsInputProps {
   value: string; // Chuỗi các kỹ năng phân cách bằng dấu phẩy: "React, Next.js, Java"
   onChange: (newValue: string) => void;
   placeholder?: string;
+  error?: string;
+  inputRef?: React.Ref<HTMLInputElement>;
 }
 
 export function SkillsInput({
@@ -19,8 +21,11 @@ export function SkillsInput({
   value,
   onChange,
   placeholder = 'Nhập kỹ năng rồi nhấn Enter hoặc dấu phẩy...',
+  error,
+  inputRef,
 }: SkillsInputProps) {
   const [inputValue, setInputValue] = useState('');
+  const hasError = !!error;
 
   // Tách chuỗi thành mảng các tag
   const skillsList = value
@@ -70,17 +75,22 @@ export function SkillsInput({
       {/* Input Field */}
       <div className="relative flex items-center">
         <input
+          ref={inputRef}
           type="text"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
-          className={`w-full bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-emerald-500 focus:bg-white focus:ring-2 focus:ring-emerald-500/10 transition-all ${
+          className={`w-full bg-slate-50 border text-slate-900 text-sm rounded-xl px-4 py-3 focus:outline-none focus:bg-white focus:ring-2 transition-all ${
+            hasError
+              ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-500/10'
+              : 'border-slate-200 focus:border-emerald-500 focus:ring-emerald-500/10'
+          } ${
             Icon ? 'pl-10 pr-24' : 'pr-24'
           }`}
         />
         {Icon && (
-          <Icon className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <Icon className={`w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none ${hasError ? 'text-rose-400' : 'text-slate-400'}`} />
         )}
 
         <button
@@ -93,6 +103,8 @@ export function SkillsInput({
           <span>Thêm</span>
         </button>
       </div>
+
+      {error && <p className="text-xs text-rose-600">{error}</p>}
 
       {/* Render Tags */}
       {skillsList.length > 0 && (

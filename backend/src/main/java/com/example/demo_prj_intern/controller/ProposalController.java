@@ -41,7 +41,18 @@ public class ProposalController {
         return ResponseEntity.ok(response);
     }
 
-    // 3. Freelancer xem danh sách hồ sơ ứng tuyển chính mình đã nộp
+    // 3. Client xem toàn bộ danh sách hồ sơ ứng tuyển của tất cả dự án
+    @GetMapping("/client/me")
+    public ResponseEntity<List<ProposalResponse>> getClientProposals() {
+        com.example.demo_prj_intern.dto.respone.CurrentUserResponse currentUser = authService.getCurrentUser();
+        if (!"CLIENT".equals(currentUser.getRole())) {
+            throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.FORBIDDEN, "Chỉ CLIENT mới được xem danh sách Proposal");
+        }
+        List<ProposalResponse> response = proposalService.getClientProposals(currentUser.getId());
+        return ResponseEntity.ok(response);
+    }
+
+    // 4. Freelancer xem danh sách hồ sơ ứng tuyển chính mình đã nộp
     @GetMapping("/freelancer/me")
     public ResponseEntity<List<ProposalResponse>> getMyProposals() {
         com.example.demo_prj_intern.dto.respone.CurrentUserResponse currentUser = authService.getCurrentUser();

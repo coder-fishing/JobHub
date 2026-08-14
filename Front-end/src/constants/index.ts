@@ -68,7 +68,6 @@ export const MOCK_FREELANCERS_API: FreelancerProfileResponse[] = [
   {
     id: 1,
     userId: 201,
-    userEmail: 'minh.nguyen@workhub.io',
     fullName: 'Nguyễn Văn Minh',
     title: 'Senior Fullstack Developer (React, Next.js, Spring Boot)',
     bio: 'Hơn 6 năm kinh nghiệm phát triển Web App quy mô lớn. Chuyên gia về Next.js performance, Spring Boot microservices và tối ưu hóa cơ sở dữ liệu.',
@@ -79,7 +78,6 @@ export const MOCK_FREELANCERS_API: FreelancerProfileResponse[] = [
   {
     id: 2,
     userId: 202,
-    userEmail: 'phamnhuquoctrieu307@gmail.com',
     fullName: 'Phạm Như Quốc Triều',
     title: 'Lead, FullstackDev, UI/UX Designer, Figma Expert, Design System, Prototyping, User Research',
     bio: 'Tốt Nghiệp Trường VKU, Ngu Như Con Bò',
@@ -90,7 +88,6 @@ export const MOCK_FREELANCERS_API: FreelancerProfileResponse[] = [
   {
     id: 3,
     userId: 203,
-    userEmail: 'thialythikimmocthuyhoatho@meomeo.kem',
     fullName: 'Lý Thị Kim Mộc Thủy Hỏa Thoa',
     title: 'DevOps & Cloud Solutions Architect',
     bio: 'Chuyên gia hạ tầng đám mây AWS & GCP. Thành thạo dựng CI/CD pipeline tự động hóa, Kubernetes cluster và bảo mật hạ tầng doanh nghiệp.',
@@ -101,7 +98,6 @@ export const MOCK_FREELANCERS_API: FreelancerProfileResponse[] = [
   {
     id: 4,
     userId: 204,
-    userEmail: 'phuong.pham@workhub.io',
     fullName: 'Phạm Minh Phương',
     title: 'Mobile App Developer (Flutter & React Native)',
     bio: 'Phát triển ứng dụng di động đa nền tảng Android/iOS. Đã có 15+ App phát hành trên App Store & Google Play với lượt tải hơn 100k+.',
@@ -112,7 +108,6 @@ export const MOCK_FREELANCERS_API: FreelancerProfileResponse[] = [
   {
     id: 5,
     userId: 205,
-    userEmail: 'vu.hoang@workhub.io',
     fullName: 'Hoàng Quốc Vũ',
     title: 'Data Engineer & Machine Learning Specialist',
     bio: 'Xây dựng đường ống xử lý dữ liệu lớn Big Data, triển khai mô hình AI/ML dự đoán thị trường và phân tích dữ liệu kinh doanh.',

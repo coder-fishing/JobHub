@@ -17,7 +17,7 @@ export function FreelancerDetailSidebar({ freelancer }: FreelancerDetailSidebarP
         <div className="space-y-3 text-xs">
           <div className="flex items-center justify-between">
             <span className="text-slate-400">Email</span>
-            <span className="font-semibold text-slate-800">{freelancer.userEmail}</span>
+            <span className="font-semibold text-slate-800">ID: {freelancer.id}</span>
           </div>
           <div className="flex items-center justify-between">
             <span className="text-slate-400">Trạng thái danh tính</span>
