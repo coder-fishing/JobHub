@@ -2,6 +2,7 @@ package com.example.demo_prj_intern.controller;
 
 import com.example.demo_prj_intern.dto.request.CreateProjectRequest;
 import com.example.demo_prj_intern.dto.request.UpdateProjectRequest;
+import com.example.demo_prj_intern.dto.respone.ProjectFilterStatsResponse;
 import com.example.demo_prj_intern.dto.respone.ProjectResponse;
 import com.example.demo_prj_intern.service.ProjectService;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("/api/project")
 @RequiredArgsConstructor
 public class ProjectController {
@@ -76,23 +78,33 @@ public class ProjectController {
 
 
     // 5. tìm kiếm thông tin theo danh mục, ngân sách
-  @GetMapping("/search")
-public ResponseEntity<Page<ProjectResponse>> searchProjects(
-        @RequestParam(required = false) String keyword,
-        @RequestParam(required = false) List<String> status,
-        @RequestParam(required = false) BigDecimal maxBudget,
-        @RequestParam(required = false) String skills,
-        @RequestParam(defaultValue = "newest") String sortBy,
-        @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "12") int size
-) {
-    String skill = (skills != null && !skills.isBlank())
-            ? skills.split(",")[0].trim()
-            : null;
+    @GetMapping("/search")
+    public ResponseEntity<Page<ProjectResponse>> searchProjects(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) List<String> status,
+            @RequestParam(required = false) BigDecimal maxBudget,
+            @RequestParam(required = false) String skills,
+            @RequestParam(defaultValue = "newest") String sortBy,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        // 🟢 Nếu gửi lên chuỗi skill (ví dụ: "Spring"), lấy từ khóa đó để query LIKE
+        String skillToSearch = null;
+        if (skills != null && !skills.isBlank()) {
+            // Lấy từ khóa skill cuối cùng trong danh sách (chính là skill vừa nhập/chọn)
+            String[] skillArray = skills.split(",");
+            skillToSearch = skillArray[skillArray.length - 1].trim();
+        }
 
-    Page<ProjectResponse> result = projectService.searchProjects(
-            keyword, status, maxBudget, skill, sortBy, page, size
-    );
-    return ResponseEntity.ok(result);
-}
+        Page<ProjectResponse> result = projectService.searchProjects(
+                keyword, status, maxBudget, skillToSearch, sortBy, page, size
+        );
+        return ResponseEntity.ok(result);
+    }
+
+// thống kê số lượng theo status và skills
+    @GetMapping("/stats")
+    public ResponseEntity<ProjectFilterStatsResponse> getFilterStats() {
+        return ResponseEntity.ok(projectService.getFilterStats());
+    }
 }

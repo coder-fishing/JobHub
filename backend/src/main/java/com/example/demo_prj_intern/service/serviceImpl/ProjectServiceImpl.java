@@ -2,6 +2,7 @@ package com.example.demo_prj_intern.service.serviceImpl;
 
 import com.example.demo_prj_intern.dto.request.CreateProjectRequest;
 import com.example.demo_prj_intern.dto.request.UpdateProjectRequest;
+import com.example.demo_prj_intern.dto.respone.ProjectFilterStatsResponse;
 import com.example.demo_prj_intern.dto.respone.ProjectResponse;
 import com.example.demo_prj_intern.entity.ProjectEntity;
 import com.example.demo_prj_intern.entity.UserEntity;
@@ -16,7 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 // tìm  kiếm dự án bởi freelancer
@@ -252,6 +255,41 @@ public Page<ProjectResponse> searchProjects(
      * Không thay đổi các method cũ.
      */
     
+    @Override
+public ProjectFilterStatsResponse getFilterStats() {
+    // 1. Đếm theo Status (Trạng thái)
+    List<Object[]> statusResults = projectRepository.countProjectsByStatus();
+    Map<String, Long> statusCounts = new HashMap<>();
+    for (Object[] result : statusResults) {
+        String status = (String) result[0];
+        Long count = (Long) result[1];
+        if (status != null) {
+            statusCounts.put(status, count);
+        }
+    }
 
+    // 2. Đếm theo từng Skill (Kỹ năng)
+    List<String> allSkillsList = projectRepository.findAllRequiredSkills();
+    Map<String, Long> skillCounts = new HashMap<>();
+
+    for (String skillString : allSkillsList) {
+        if (skillString != null && !skillString.trim().isEmpty()) {
+            String[] skills = skillString.split(",");
+            for (String skill : skills) {
+                String cleanSkill = skill.trim();
+                if (!cleanSkill.isEmpty()) {
+                    skillCounts.put(cleanSkill, skillCounts.getOrDefault(cleanSkill, 0L) + 1);
+                }
+            }
+        }
+    }
+
+    // 3. Trả về Response DTO
+    return ProjectFilterStatsResponse.builder()
+            .statusCounts(statusCounts)
+            .skillCounts(skillCounts)
+            .totalProjects(projectRepository.count())
+            .build();
+}
     
 }

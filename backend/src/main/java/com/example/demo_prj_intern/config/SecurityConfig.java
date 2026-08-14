@@ -48,6 +48,7 @@ public class SecurityConfig {
                         .requestMatchers("/oauth2/**").permitAll() // Cho phép oauth2 flow
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/freelancer/profile", "/api/freelancer/profile/*").permitAll() // Cho phép xem hồ sơ freelancer tự do
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/projects", "/api/projects/*").permitAll() // Cho phép xem dự án tự do
+                        .requestMatchers("/api/project/stats", "/api/project/search", "/api/project/**").permitAll()
                         .anyRequest().authenticated()               // Các API còn lại bắt buộc đăng nhập
                 )
                 

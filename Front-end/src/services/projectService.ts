@@ -14,6 +14,9 @@ export interface ProjectFilterParams {
   maxBudget?: number;
   sortBy?: 'newest' | 'budget_high' | 'budget_low';
   myProjects?: boolean; // Added for Client dashboard
+  // BỔ SUNG THÊM 2 DÒNG NÀY VÀO INTERFACE:
+  page?: number;
+  size?: number;
 }
 
 export interface CreateProjectPayload {
@@ -23,6 +26,14 @@ export interface CreateProjectPayload {
   requiredSkills: string; // Not stored in backend currently, but passed
   maxFreelancers: number;
   deadline: string;
+}
+
+
+/// tinh dua tren status va skill
+export interface ProjectFilterStats {
+  statusCounts: Record<string, number>;
+  skillCounts: Record<string, number>;
+  totalProjects: number;
 }
 
 const API_BASE = 'http://localhost:8080/api/project';
@@ -149,5 +160,15 @@ export const projectService = {
       coverLetter: payload.coverLetter,
     });
     return { success: true };
+  },
+
+
+  // 🟢 THÊM HÀM NÀY: status va skill
+  getFilterStats: async (): Promise<ProjectFilterStats> => {
+    const res = await fetch('http://localhost:8080/api/project/stats');
+    if (!res.ok) {
+      throw new Error('Không thể tải dữ liệu thống kê');
+    }
+    return res.json();
   },
 };

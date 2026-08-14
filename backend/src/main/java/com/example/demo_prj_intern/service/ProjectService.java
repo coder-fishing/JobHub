@@ -2,6 +2,7 @@ package com.example.demo_prj_intern.service;
 
 import com.example.demo_prj_intern.dto.request.CreateProjectRequest;
 import com.example.demo_prj_intern.dto.request.UpdateProjectRequest;
+import com.example.demo_prj_intern.dto.respone.ProjectFilterStatsResponse;
 import com.example.demo_prj_intern.dto.respone.ProjectResponse;
 
 import java.math.BigDecimal;
@@ -34,5 +35,8 @@ public interface ProjectService {
             int page,
             int size
     );
+
+    // ★ Thống kê số lượng dự án theo Status và Skill
+    ProjectFilterStatsResponse getFilterStats();
 
 }
