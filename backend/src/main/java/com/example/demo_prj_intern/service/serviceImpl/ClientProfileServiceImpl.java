@@ -12,6 +12,7 @@ import com.example.demo_prj_intern.repository.ContractRepository;
 import com.example.demo_prj_intern.repository.ProjectRepository;
 import com.example.demo_prj_intern.repository.UserRepository;
 import com.example.demo_prj_intern.service.ClientProfileService;
+import com.example.demo_prj_intern.mapper.ClientProfileMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,7 @@ public class ClientProfileServiceImpl implements ClientProfileService {
     private final UserRepository userRepository;
     private final ProjectRepository projectRepository;
     private final ContractRepository contractRepository;
+    private final ClientProfileMapper clientProfileMapper;
 
     @Override
     public ClientProfileResponse getClientProfileByUserId(Long userId) {
@@ -62,18 +64,12 @@ public class ClientProfileServiceImpl implements ClientProfileService {
                 ? Math.round(((double) totalHiredCount / totalProjectsPosted) * 100.0 * 100.0) / 100.0
                 : 0.0;
 
-        ClientProfileResponse response = new ClientProfileResponse();
-        response.setId(profile.getId());
+        ClientProfileResponse response = clientProfileMapper.toResponse(profile);
         response.setUserId(user.getId());
         response.setEmail(user.getEmail());
-        response.setCompanyName(profile.getCompanyName() != null ? profile.getCompanyName() : user.getEmail());
-        response.setCompanyWebsite(profile.getCompanyWebsite());
-        response.setIndustry(profile.getIndustry());
-        response.setCompanySize(profile.getCompanySize());
-        response.setBio(profile.getBio());
-        response.setLocation(profile.getLocation());
-        response.setAvatarUrl(profile.getAvatarUrl());
-        response.setTaxCode(profile.getTaxCode());
+        if (response.getCompanyName() == null || response.getCompanyName().isBlank()) {
+            response.setCompanyName(user.getEmail());
+        }
 
         // Gán thông tin thống kê uy tín
         response.setTotalProjectsPosted(totalProjectsPosted);
@@ -98,16 +94,8 @@ public class ClientProfileServiceImpl implements ClientProfileService {
                     return newProfile;
                 });
 
-        if (request.getCompanyName() != null && !request.getCompanyName().trim().isEmpty()) {
-            profile.setCompanyName(request.getCompanyName().trim());
-        }
-        if (request.getCompanyWebsite() != null) profile.setCompanyWebsite(request.getCompanyWebsite().trim());
-        if (request.getIndustry() != null) profile.setIndustry(request.getIndustry().trim());
-        if (request.getCompanySize() != null) profile.setCompanySize(request.getCompanySize().trim());
-        if (request.getBio() != null) profile.setBio(request.getBio().trim());
-        if (request.getLocation() != null) profile.setLocation(request.getLocation().trim());
-        if (request.getAvatarUrl() != null) profile.setAvatarUrl(request.getAvatarUrl().trim());
-        if (request.getTaxCode() != null) profile.setTaxCode(request.getTaxCode().trim());
+        // Tự động bỏ qua các trường null và tự động trim() các thuộc tính kiểu String
+        clientProfileMapper.updateEntityFromRequest(request, profile);
 
         clientProfileRepository.save(profile);
 
