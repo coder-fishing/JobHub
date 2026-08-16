@@ -2,13 +2,16 @@ package com.example.demo_prj_intern.service.serviceImpl;
 
 import com.example.demo_prj_intern.dto.request.CreateContractRequest;
 import com.example.demo_prj_intern.dto.respone.ContractResponse;
+import com.example.demo_prj_intern.dto.respone.EscrowResponse;
 import com.example.demo_prj_intern.entity.ContractEntity;
 import com.example.demo_prj_intern.entity.FreelancerProfileEntity;
 import com.example.demo_prj_intern.entity.ProjectEntity;
 import com.example.demo_prj_intern.entity.ProposalEntity;
 import com.example.demo_prj_intern.repository.*;
 import com.example.demo_prj_intern.service.ContractService;
+import com.example.demo_prj_intern.service.EscrowService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +29,8 @@ public class ContractServiceImpl implements ContractService {
     private final ProposalRepository proposalRepository;
     private final FreelancerProfileRepository freelancerProfileRepository;
     private final UserRepository userRepository;
+    @Lazy
+    private final EscrowService escrowService;
 
     @Override
     @Transactional
@@ -71,6 +76,9 @@ public class ContractServiceImpl implements ContractService {
         contract.setContractStatus("PROCESSING");
 
         ContractEntity savedContract = contractRepository.save(contract);
+
+        // 7. Tự động tạo Escrow PENDING cho contract mới
+        escrowService.createEscrowForContract(savedContract.getId());
 
         return mapToResponse(savedContract);
     }
@@ -170,5 +178,18 @@ public class ContractServiceImpl implements ContractService {
         response.setContractStatus(entity.getContractStatus());
         response.setCompletedAt(entity.getCompletedAt());
         return response;
+    }
+
+    // ===== MỚI: fundContract + getEscrow =====
+
+    @Override
+    @Transactional
+    public EscrowResponse fundContract(Long clientId, Long contractId) {
+        return escrowService.fundContract(clientId, contractId);
+    }
+
+    @Override
+    public EscrowResponse getEscrow(Long contractId) {
+        return escrowService.getEscrowByContractId(contractId);
     }
 }

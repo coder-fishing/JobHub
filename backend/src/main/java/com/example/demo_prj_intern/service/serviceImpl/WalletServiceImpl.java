@@ -181,7 +181,7 @@ public class WalletServiceImpl implements WalletService {
                 .collect(Collectors.toList());
     }
 
-    // === HÀM CONVERT ENTITY -> RESPONSE DTO ===
+    // ===== HELPER: Map entity sang response =====
     private WalletResponse mapToResponse(WalletEntity entity) {
         WalletResponse response = new WalletResponse();
         response.setWalletId(entity.getId());
@@ -190,6 +190,7 @@ public class WalletServiceImpl implements WalletService {
         }
         response.setBalance(entity.getBalance());
         response.setFreezingBalance(entity.getFreezingBalance());
+        response.setStatus(entity.getStatus());
         return response;
     }
 
@@ -200,9 +201,157 @@ public class WalletServiceImpl implements WalletService {
             response.setWalletId(entity.getWallet().getId());
         }
         response.setAmount(entity.getAmount());
+        response.setBalanceBefore(entity.getBalanceBefore());
+        response.setBalanceAfter(entity.getBalanceAfter());
         response.setTransactionType(entity.getTransactionType());
+        response.setReferenceType(entity.getReferenceType());
         response.setReferenceId(entity.getReferenceId());
         response.setCreatedAt(entity.getCreatedAt());
         return response;
+    }
+
+    // ===== INTERNAL HELPERS =====
+
+    /**
+     * Cộng tiền vào available balance (balance) của user.
+     * Tự khởi tạo Wallet nếu chưa có.
+     * Ghi WalletTransaction với amount dương.
+     */
+    @Override
+    @Transactional
+    public void creditWallet(Long userId, BigDecimal amount, String txType, String refType, Long refId) {
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Số tiền cộng phải lớn hơn 0");
+        }
+        WalletEntity wallet = getOrCreateWallet(userId);
+
+        BigDecimal before = wallet.getBalance();
+        wallet.setBalance(before.add(amount));
+        walletRepository.save(wallet);
+
+        recordTransaction(wallet, txType, amount, before, wallet.getBalance(), refType, refId);
+    }
+
+    /**
+     * Trừ tiền từ available balance (balance) của user.
+     * Throw nếu wallet không ACTIVE hoặc balance không đủ.
+     * Ghi WalletTransaction với amount âm.
+     */
+    @Override
+    @Transactional
+    public void debitWallet(Long userId, BigDecimal amount, String txType, String refType, Long refId) {
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Số tiền trừ phải lớn hơn 0");
+        }
+        WalletEntity wallet = walletRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Chưa có ví cho userId: " + userId + ". Vui lòng nạp tiền trước."));
+
+        if (!"ACTIVE".equals(wallet.getStatus())) {
+            throw new IllegalArgumentException("Ví của bạn đang bị khóa (FROZEN), không thể thực hiện giao dịch.");
+        }
+        if (wallet.getBalance().compareTo(amount) < 0) {
+            throw new IllegalArgumentException("Số dư không đủ. Hiện có: " + wallet.getBalance() + " VNĐ, cần: " + amount + " VNĐ");
+        }
+
+        BigDecimal before = wallet.getBalance();
+        wallet.setBalance(before.subtract(amount));
+        walletRepository.save(wallet);
+
+        recordTransaction(wallet, txType, amount.negate(), before, wallet.getBalance(), refType, refId);
+    }
+
+    /**
+     * Chuyển từ available balance sang freezing balance khi tạo Withdrawal.
+     */
+    @Override
+    @Transactional
+    public void freezeBalance(Long userId, BigDecimal amount) {
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Số tiền phải lớn hơn 0");
+        }
+        WalletEntity wallet = walletRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy ví cho userId: " + userId));
+
+        if (!"ACTIVE".equals(wallet.getStatus())) {
+            throw new IllegalArgumentException("Ví đang bị khóa (FROZEN)");
+        }
+        if (wallet.getBalance().compareTo(amount) < 0) {
+            throw new IllegalArgumentException("Số dư không đủ để yêu cầu rút. Hiện có: " + wallet.getBalance() + " VNĐ");
+        }
+
+        wallet.setBalance(wallet.getBalance().subtract(amount));
+        wallet.setFreezingBalance(wallet.getFreezingBalance().add(amount));
+        walletRepository.save(wallet);
+    }
+
+    /**
+     * Hoàn trả từ freezing balance về available balance khi Withdrawal bị REJECTED.
+     * Ghi WalletTransaction WITHDRAWAL_REFUND.
+     */
+    @Override
+    @Transactional
+    public void unfreezeBalance(Long userId, BigDecimal amount, Long withdrawalId) {
+        WalletEntity wallet = walletRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy ví cho userId: " + userId));
+
+        BigDecimal before = wallet.getBalance();
+        wallet.setBalance(before.add(amount));
+        wallet.setFreezingBalance(wallet.getFreezingBalance().subtract(amount));
+        walletRepository.save(wallet);
+
+        recordTransaction(wallet, "WITHDRAWAL_REFUND", amount, before, wallet.getBalance(), "WITHDRAWAL", withdrawalId);
+    }
+
+    /**
+     * Khấu trừ freezing balance khi Withdrawal COMPLETED (chuyển khoản thật đã xảy ra).
+     * Ghi WalletTransaction WITHDRAWAL.
+     */
+    @Override
+    @Transactional
+    public void deductFreezeBalance(Long userId, BigDecimal amount, Long withdrawalId) {
+        WalletEntity wallet = walletRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy ví cho userId: " + userId));
+
+        BigDecimal freezeBefore = wallet.getFreezingBalance();
+        wallet.setFreezingBalance(freezeBefore.subtract(amount));
+        walletRepository.save(wallet);
+
+        // Ghi transaction với balance = freezingBalance (không ảnh hưởng available)
+        recordTransaction(wallet, "WITHDRAWAL", amount.negate(), wallet.getBalance(), wallet.getBalance(), "WITHDRAWAL", withdrawalId);
+    }
+
+    /**
+     * Lấy hoặc khởi tạo Wallet cho user.
+     */
+    @Override
+    @Transactional
+    public WalletEntity getOrCreateWallet(Long userId) {
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng với ID: " + userId));
+        return walletRepository.findByUserId(userId).orElseGet(() -> {
+            WalletEntity newWallet = new WalletEntity();
+            newWallet.setUser(user);
+            newWallet.setBalance(BigDecimal.ZERO);
+            newWallet.setFreezingBalance(BigDecimal.ZERO);
+            newWallet.setStatus("ACTIVE");
+            return walletRepository.save(newWallet);
+        });
+    }
+
+    /**
+     * Tạo WalletTransactionEntity và lưu vào DB.
+     */
+    private void recordTransaction(WalletEntity wallet, String txType, BigDecimal amount,
+                                   BigDecimal balanceBefore, BigDecimal balanceAfter,
+                                   String refType, Long refId) {
+        WalletTransactionEntity tx = new WalletTransactionEntity();
+        tx.setWallet(wallet);
+        tx.setTransactionType(txType);
+        tx.setAmount(amount);
+        tx.setBalanceBefore(balanceBefore);
+        tx.setBalanceAfter(balanceAfter);
+        tx.setReferenceType(refType);
+        tx.setReferenceId(refId);
+        walletTransactionRepository.save(tx);
     }
 }

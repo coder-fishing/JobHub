@@ -46,6 +46,8 @@ dependencies {
     testCompileOnly 'org.projectlombok:lombok'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testAnnotationProcessor 'org.projectlombok:lombok'
+
+    implementation 'vn.payos:payos-java:2.0.1'
 }
 
 tasks.named('test') {

@@ -10,8 +10,10 @@ import com.example.demo_prj_intern.entity.MilestoneSubmissionEntity;
 import com.example.demo_prj_intern.repository.ContractRepository;
 import com.example.demo_prj_intern.repository.MilestoneRepository;
 import com.example.demo_prj_intern.repository.MilestoneSubmissionRepository;
+import com.example.demo_prj_intern.service.EscrowService;
 import com.example.demo_prj_intern.service.MilestoneService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +29,8 @@ public class MilestoneServiceImpl implements MilestoneService {
     private final MilestoneRepository milestoneRepository;
     private final MilestoneSubmissionRepository milestoneSubmissionRepository;
     private final ContractRepository contractRepository;
+    @Lazy
+    private final EscrowService escrowService;
 
     @Override
     @Transactional
@@ -150,9 +154,24 @@ public class MilestoneServiceImpl implements MilestoneService {
             throw new IllegalArgumentException("Bạn không có quyền nghiệm thu cột mốc này");
         }
 
-        // Chuyển trạng thái cột mốc sang RELEASED (Đã nghiệm thu/hoàn thành)
+        // Idempotency: đã RELEASED rồi thì báo lỗi
+        if ("RELEASED".equals(milestone.getStatus())) {
+            throw new IllegalArgumentException("Cột mốc này đã được nghiệm thu trước đó rồi");
+        }
+
+        // Freelancer phải đã nộp bài
+        if (!"SUBMITTED".equals(milestone.getStatus())) {
+            throw new IllegalArgumentException(
+                    "Cột mốc phải ở trạng thái SUBMITTED để nghiệm thu (hiện tại: " + milestone.getStatus() + ")");
+        }
+
+        // Chuyển trạng thái cột mốc sang RELEASED trước
         milestone.setStatus("RELEASED");
         MilestoneEntity savedMilestone = milestoneRepository.save(milestone);
+
+        // Sau khi save, gọi EscrowService để credit Freelancer wallet
+        // EscrowService.releaseMilestone sẽ kiểm tra idempotency bên trong
+        escrowService.releaseMilestone(milestoneId);
 
         return mapToResponse(savedMilestone);
     }

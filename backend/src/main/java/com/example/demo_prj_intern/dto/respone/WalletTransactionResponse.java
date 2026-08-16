@@ -9,7 +9,10 @@ public class WalletTransactionResponse {
     private Long id;
     private Long walletId;
     private BigDecimal amount;
-    private String transactionType; // DEPOSIT, ESCROW_HOLD, ESCROW_RELEASE, WITHDRAW, REFUND
+    private BigDecimal balanceBefore;
+    private BigDecimal balanceAfter;
+    private String transactionType; // DEPOSIT, ESCROW_HOLD, ESCROW_RELEASE, WITHDRAWAL, WITHDRAWAL_REFUND
+    private String referenceType;   // PAYMENT, CONTRACT, MILESTONE, WITHDRAWAL
     private Long referenceId;
     private LocalDateTime createdAt;
 }

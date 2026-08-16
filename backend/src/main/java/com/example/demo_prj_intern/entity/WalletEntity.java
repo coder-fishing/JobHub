@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
 
+
 @Entity
 @Table(name = "wallets")
 @Getter @Setter
@@ -23,4 +24,7 @@ public class WalletEntity {
 
     @Column(name = "freezing_balance", precision = 15, scale = 2)
     private BigDecimal freezingBalance = BigDecimal.ZERO;
+
+    @Column(name = "status", length = 20)
+    private String status = "ACTIVE"; // ACTIVE, FROZEN
 }

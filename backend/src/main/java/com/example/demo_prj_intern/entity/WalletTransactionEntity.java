@@ -22,8 +22,17 @@ public class WalletTransactionEntity {
     @Column(name = "amount", nullable = false, precision = 15, scale = 2)
     private BigDecimal amount;
 
+    @Column(name = "balance_before", precision = 15, scale = 2)
+    private BigDecimal balanceBefore;
+
+    @Column(name = "balance_after", precision = 15, scale = 2)
+    private BigDecimal balanceAfter;
+
     @Column(name = "transaction_type", nullable = false, length = 30)
-    private String transactionType; // 'DEPOSIT', 'ESCROW_HOLD', 'ESCROW_RELEASE', 'WITHDRAW', 'REFUND'
+    private String transactionType; // DEPOSIT, ESCROW_HOLD, ESCROW_RELEASE, WITHDRAWAL, WITHDRAWAL_REFUND
+
+    @Column(name = "reference_type", length = 30)
+    private String referenceType; // PAYMENT, CONTRACT, MILESTONE, WITHDRAWAL
 
     @Column(name = "reference_id")
     private Long referenceId;

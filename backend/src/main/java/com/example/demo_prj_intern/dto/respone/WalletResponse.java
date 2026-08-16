@@ -11,4 +11,5 @@ public class WalletResponse {
     private Long userId;
     private BigDecimal balance;
     private BigDecimal freezingBalance;
+    private String status; // ACTIVE, FROZEN
 }

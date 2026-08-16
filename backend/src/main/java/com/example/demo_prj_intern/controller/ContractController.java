@@ -2,6 +2,7 @@ package com.example.demo_prj_intern.controller;
 
 import com.example.demo_prj_intern.dto.request.CreateContractRequest;
 import com.example.demo_prj_intern.dto.respone.ContractResponse;
+import com.example.demo_prj_intern.dto.respone.EscrowResponse;
 import com.example.demo_prj_intern.service.ContractService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -66,6 +67,27 @@ public class ContractController {
             throw new IllegalArgumentException("Client ID là tham số bắt buộc trong URL (Ví dụ: ?clientId=1)");
         }
         ContractResponse response = contractService.completeContract(clientId, contractId);
+        return ResponseEntity.ok(response);
+    }
+
+    // 6. Client fund escrow cho hợp đồng (debit wallet của client)
+    // URL: POST http://localhost:8080/api/contract/1/fund?clientId=1
+    @PostMapping("/{contractId}/fund")
+    public ResponseEntity<EscrowResponse> fundContract(
+            @PathVariable("contractId") Long contractId,
+            @RequestParam(value = "clientId", required = false) Long clientId) {
+        if (clientId == null) {
+            throw new IllegalArgumentException("Client ID là tham số bắt buộc trong URL (Ví dụ: ?clientId=1)");
+        }
+        EscrowResponse response = contractService.fundContract(clientId, contractId);
+        return ResponseEntity.ok(response);
+    }
+
+    // 7. Lấy thông tin Escrow của hợp đồng
+    // URL: GET http://localhost:8080/api/contract/1/escrow
+    @GetMapping("/{contractId}/escrow")
+    public ResponseEntity<EscrowResponse> getEscrow(@PathVariable("contractId") Long contractId) {
+        EscrowResponse response = contractService.getEscrow(contractId);
         return ResponseEntity.ok(response);
     }
 }
